@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Nuevo producto{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin: 2rem auto;">
+  <div class="retro-panel">
+    <h2 style="text-align:center; margin-bottom:1.5rem;">Publicar producto</h2>
+    <form method="post" enctype="multipart/form-data" class="form-retro">
+      {% csrf_token %}
+
+      <div style="margin-bottom: 1rem;">
+        {{ form.title.label_tag }}
+        {{ form.title }}
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        {{ form.description.label_tag }}
+        {{ form.description }}
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        {{ form.marca.label_tag }}
+        {{ form.marca }}
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        {{ form.category.label_tag }}
+        {{ form.category }}
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        {{ form.price.label_tag }}
+        {{ form.price }}
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        {{ form.stock.label_tag }}
+        {{ form.stock }}
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        {{ form.image.label_tag }}
+        {{ form.image }}
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        {{ form.active.label_tag }}
+        {{ form.active }}
+      </div>
+
+      <button type="submit" class="btn-retro">Publicar</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

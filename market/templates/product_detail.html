@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ product.title }} • Detalle{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 2rem; margin-bottom: 2rem;">
+  <div class="retro-panel">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+      <div>
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.title }}" style="width: 100%; border-radius: 8px; box-shadow: 3px 3px 8px rgba(0,0,0,0.15);">
+        {% endif %}
+      </div>
+      <div>
+        <h2 style="margin-bottom: 0.5rem;">{{ product.title }}</h2>
+        <p style="color: #666; margin-bottom: 1rem;">{{ product.marca }} · {{ product.category }}</p>
+        <h3 style="color: var(--retro-accent); margin-bottom: 1rem;">${{ product.price }}</h3>
+        <p style="margin-bottom: 1.5rem;">{{ product.description }}</p>
+        {% if product.is_available %}
+          <form method="post" action="{% url 'market:add-to-cart' product.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-retro">🛒 Agregar al carrito</button>
+          </form>
+        {% else %}
+          <span class="badge-retro">No disponible</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="max-width: 500px; margin: 2rem auto;">
+  <div class="retro-panel" style="text-align: center;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+      {% if profile.avatar %}
+        <img src="{{ profile.avatar.url }}" alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--retro-accent); box-shadow: 3px 3px 8px rgba(0,0,0,0.15);">
+      {% else %}
+        <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=random" 
+             alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--retro-accent); box-shadow: 3px 3px 8px rgba(0,0,0,0.15);">
+      {% endif %}
+      <h2 style="margin: 0; color: #333;">{{ request.user.username }}</h2>
+    </div>
+
+    <div style="margin-bottom: 1.5rem; text-align: center;">
+      {% if profile.bio %}
+        <p>{{ profile.bio }}</p>
+      {% else %}
+        <p style="color: #666;">No has agregado una biografía todavía.</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <a href="{% url 'edit_profile' %}" class="btn-retro">Editar perfil</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
