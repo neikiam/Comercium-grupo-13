@@ -7,11 +7,8 @@ def home(request):
         {'imagen': 'home/producto2.jpg', 'descripcion': 'Verduras seleccionadas'},
         {'imagen': 'home/producto3.jpg', 'descripcion': 'Pan casero del día'},
     ]
-    products = Product.objects.filter(active=True).order_by("-created_at")[:6]
+    products = Product.objects.filter(active=True).select_related('seller').order_by("-created_at")[:6]
     return render(request, "index.html", {"products": products})
 
 def login_view(request):
     return render(request, 'login.html')
-
-def tienda(request):
-    return redirect('market:productlist')

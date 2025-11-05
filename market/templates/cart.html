@@ -50,13 +50,19 @@
     <script>
       const mp = new MercadoPago("{{ PUBLIC_KEY }}", { locale: 'es-AR' });
 
-      document.getElementById("checkout-btn").addEventListener("click", () => {
+      document.getElementById("checkout-btn").addEventListener("click", (e) => {
+        const btn = e.target;
+        btn.disabled = true;
+        btn.textContent = "⏳ Procesando...";
+        
         fetch("{% url 'market:crear-preferencia-carrito' %}")
           .then(response => response.json())
           .then(data => {
             window.location.href = data.init_point;
           })
           .catch(() => {
+            btn.disabled = false;
+            btn.textContent = "💳 Pagar carrito completo";
             alert("Hubo un problema al generar el pago. Intenta nuevamente.");
           });
       });

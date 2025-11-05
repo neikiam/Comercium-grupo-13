@@ -12,8 +12,9 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("market/", include("market.urls")),
     path("profiles/", include("perfil.urls")),
-    path('', include('core.urls')),
-    path("", include("presence.urls")),
+    path("presence/", include("presence.urls")),
+    path("chat/", include("simple_chat.urls")),
+    path('core/', include('core.urls')),
     path("favicon.ico", RedirectView.as_view(url=static_tag('favicon.svg'), permanent=True)),
 ]
 

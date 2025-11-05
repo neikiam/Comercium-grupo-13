@@ -1,6 +1,6 @@
 import mercadopago
 from django.conf import settings
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -10,11 +10,25 @@ from .forms import ProductForm
  
 
 
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.core.cache import cache
+
+
 def product_list(request):
-    products = Product.objects.filter(active=True)
+    products = Product.objects.filter(active=True).select_related('seller')
 
     category = request.GET.get('category')
     order = request.GET.get('order')
+    query = request.GET.get('q')
+
+    if query:
+        products = products.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(marca__icontains=query) |
+            Q(category__icontains=query)
+        )
 
     if category:
         products = products.filter(category=category)
@@ -26,14 +40,26 @@ def product_list(request):
     else:
         products = products.order_by("-created_at")
 
-    categories = Product.objects.values_list('category', flat=True).distinct()
+    categories = cache.get('product_categories')
+    if categories is None:
+        categories = list(Product.objects.values_list('category', flat=True).distinct())
+        cache.set('product_categories', categories, 300)
+
+    get_params = request.GET.copy()
+    get_params.pop('page', None)
+    base_qs = get_params.urlencode()
+
+    paginator = Paginator(products, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     return render(
         request,
         "product_list.html",
         {
-            "products": products,
-            "categories": categories
+            "page_obj": page_obj,
+            "categories": categories,
+            "base_qs": base_qs,
         }
     )
 
@@ -83,24 +109,31 @@ def product_delete(request, pk):
 @require_POST
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    cart, created = Cart.objects.get_or_create(user=request.user)
+    
+    if not product.is_available():
+        messages.error(request, "Este producto no está disponible.")
+        return redirect("market:productlist")
+    
+    cart, _ = Cart.objects.get_or_create(user=request.user)
     item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-    new_qty = item.quantity if created else item.quantity + 1
+    
+    new_qty = 1 if created else item.quantity + 1
+    
     if new_qty > product.stock:
-        messages.warning(request, "No hay suficiente stock para agregar más unidades de este producto.")
-    else:
+        messages.warning(request, f"Solo hay {product.stock} unidades disponibles.")
         if created:
-            messages.success(request, "Producto agregado al carrito.")
-        else:
-            item.quantity = new_qty
-            item.save()
-            messages.success(request, "Cantidad actualizada en el carrito.")
+            item.delete()
+    else:
+        item.quantity = new_qty
+        item.save()
+        messages.success(request, "Producto agregado al carrito.")
+    
     return redirect("market:view-cart")
 
 
 @login_required
 def view_cart(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart, created = Cart.objects.prefetch_related('items__product__seller').get_or_create(user=request.user)
     context = {
         "cart": cart,
         "PUBLIC_KEY": getattr(settings, "MERCADOPAGO_PUBLIC_KEY", None),

@@ -8,8 +8,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    if os.getenv("DEBUG", "False").lower() == "true":
+        SECRET_KEY = "dev-secret-key-change-in-production-immediately"
+    else:
+        raise ValueError("SECRET_KEY must be set in production!")
+
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 # Aplicaciones
 
@@ -36,7 +42,6 @@ PROPIAS = [
     "perfil",
     "presence",
     "simple_chat",
-    "quotes",
 ]
 
 INSTALLED_APPS = BASICS + TERCEROS + PROPIAS
@@ -53,9 +58,14 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 
+# Configuración de django-allauth
 ACCOUNT_SIGNUP_FIELDS = ["email", "username", "password1", "password2"]
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_EMAIL_REQUIRED = True  # Email obligatorio
+ACCOUNT_UNIQUE_EMAIL = True    # Validar que el email sea único
+ACCOUNT_USERNAME_REQUIRED = True  # Username obligatorio
+ACCOUNT_EMAIL_VERIFICATION = "optional"  # Verificación de email opcional (puede ser "mandatory" o "none")
 
 SESSION_COOKIE_AGE = 30 * 60
 SESSION_SAVE_EVERY_REQUEST = True
@@ -97,6 +107,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "market.context_processors.cart",
             ],
         },
     },
@@ -161,8 +172,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internacionalización
 
-LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+LANGUAGE_CODE = "es-ar"
+TIME_ZONE = "America/Argentina/Buenos_Aires"
 USE_I18N = True
 USE_TZ = True
 
@@ -176,5 +187,51 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'django.log',
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
 if not DEBUG:
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True

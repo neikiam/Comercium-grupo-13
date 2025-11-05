@@ -323,6 +323,16 @@ h3 { font-size: 1.4rem; margin-bottom: 0.6rem; }
   box-shadow: inset 2px 2px 6px rgba(0,0,0,0.15);
 }
 
+.chat-message-retro {
+  background: rgba(255,255,255,0.7);
+  border: 1px solid var(--retro-border);
+  border-radius: 8px;
+  padding: 0.7rem;
+  margin-bottom: 0.8rem;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+  word-wrap: break-word;
+}
+
 .message-retro {
   background: rgba(255,255,255,0.6);
   border: 1px solid var(--retro-border);
@@ -367,6 +377,21 @@ h3 { font-size: 1.4rem; margin-bottom: 0.6rem; }
 .p-1 { padding: 0.5rem; }
 .p-2 { padding: 1rem; }
 .p-3 { padding: 1.5rem; }
+
+/* Avatares */
+.avatar-24 { 
+  width: 24px !important; 
+  height: 24px !important; 
+  min-width: 24px;
+  min-height: 24px;
+  max-width: 24px;
+  max-height: 24px;
+  border-radius: 50%; 
+  border: 1px solid var(--retro-border); 
+  object-fit: cover;
+  display: inline-block;
+  vertical-align: middle;
+}
 
 /* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {

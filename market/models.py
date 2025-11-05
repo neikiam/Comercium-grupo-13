@@ -22,6 +22,15 @@ class Product(models.Model):
     def is_available(self):
         return self.active and self.stock > 0
     
+    class Meta:
+        indexes = [
+            models.Index(fields=['-created_at']),
+            models.Index(fields=['category', '-created_at']),
+            models.Index(fields=['seller', '-created_at']),
+            models.Index(fields=['active', '-created_at']),
+        ]
+        ordering = ['-created_at']
+    
 # Carrito
 class Cart(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
