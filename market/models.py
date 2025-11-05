@@ -1,4 +1,6 @@
 from django.conf import settings
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django.db import models
 
 class Product(models.Model):
@@ -34,3 +36,11 @@ class CartItem(models.Model):
 
     def subtotal(self):
         return self.product.price * self.quantity
+
+
+# En algunos entornos (p. ej. SQLite con constraints antiguas), eliminar un Product
+# desde el admin puede lanzar IntegrityError. Este hook asegura limpiar
+# los CartItem asociados antes del borrado del producto.
+@receiver(pre_delete, sender=Product)
+def cleanup_cartitems_on_product_delete(sender, instance, **kwargs):
+    CartItem.objects.filter(product=instance).delete()
