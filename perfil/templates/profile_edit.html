@@ -15,7 +15,7 @@
             {% if request.user.profile.avatar %}
               <img id="avatar-preview" src="{{ request.user.profile.avatar.url }}" alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--retro-accent); box-shadow: 3px 3px 8px rgba(0,0,0,0.15); transition: opacity 0.3s;">
             {% else %}
-              <img id="avatar-preview" src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=random&size=120" alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--retro-accent); box-shadow: 3px 3px 8px rgba(0,0,0,0.15); transition: opacity 0.3s;">
+              <img id="avatar-preview" src="https://ui-avatars.com/api/?name={{ request.user.username|urlencode }}&background=random&size=120" alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--retro-accent); box-shadow: 3px 3px 8px rgba(0,0,0,0.15); transition: opacity 0.3s;">
             {% endif %}
             <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;" id="avatar-overlay">
               <span style="color: white; font-size: 2rem;">📷</span>
@@ -98,7 +98,7 @@
   if (avatarClear) {
     avatarClear.addEventListener('change', function() {
       if (this.checked) {
-        avatarPreview.src = 'https://ui-avatars.com/api/?name={{ request.user.username }}&background=random&size=120';
+        avatarPreview.src = 'https://ui-avatars.com/api/?name={{ request.user.username|urlencode }}&background=random&size=120';
         avatarInput.value = '';
       } else if (avatarInput.files.length === 0) {
         // Restaurar imagen original si se desmarca y no hay archivo nuevo
