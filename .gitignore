@@ -1,9 +1,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
-db.sqlite3
-db.sqlite3-journal
-media/                 
+#db.sqlite3
+#db.sqlite3-journal
+#media/                 
 *.log
 logs/
 .env
@@ -31,5 +31,6 @@ Desktop.ini
 node_modules/
 dist/
 build/
-staticfiles/
+#staticfiles/
 docs/**
+!media/.gitkeep
