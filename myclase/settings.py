@@ -128,6 +128,10 @@ else:
     DATABASES["default"] = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
+        # Esperar hasta N segundos si la base está temporalmente bloqueada (SQLite)
+        "OPTIONS": {
+            "timeout": int(os.getenv("SQLITE_TIMEOUT", "10")),
+        },
     }
 
 # Social login
