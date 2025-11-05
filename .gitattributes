@@ -1,12 +1,8 @@
-# Treat collected static assets as vendored/generated so GitHub Linguist
-# does not count them toward language stats
 staticfiles/** linguist-vendored
 staticfiles/** linguist-generated=true
 
-# Minified bundles and sourcemaps are generated artifacts
 **/*.min.js linguist-generated=true
 **/*.min.css linguist-generated=true
 **/*.map linguist-generated=true
 
-# Common vendor directories (optional)
 **/vendor/** linguist-vendored
