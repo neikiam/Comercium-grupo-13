@@ -22,12 +22,21 @@
 
       <ul class="navbar-nav-retro">
         <li><a class="nav-link-retro" href="{% url 'market:productlist' %}">🏬 Tienda</a></li>
+        {% if user.is_authenticated %}
+        <li>
+          <a class="nav-link-retro" href="{% url 'market:view-cart' %}">🛒 Carrito{% if cart_count %} <span style="display:inline-block; min-width: 20px; padding: 0 6px; height: 20px; line-height: 20px; text-align:center; background: var(--retro-accent); color: #fff; border-radius: 10px; font-size: 0.8rem; margin-left: 6px;">{{ cart_count }}</span>{% endif %}</a>
+        </li>
+        {% endif %}
+        {% if user.is_authenticated %}
+          <li><a class="nav-link-retro" href="{% url 'simple_chat:chat' %}">💬 Chat</a></li>
+        {% endif %}
 
         {% if user.is_authenticated %}
+          <li><a class="nav-link-retro" href="{% url 'simple_chat:private-list' %}">💬 Chats privados</a></li>
           <li style="color: var(--retro-panel);">Hola, {{ user.first_name|default:user.username }}</li>
           
           <li>
-            <a href="{% url 'profile' %}" class="nav-link-retro">
+            <a href="{% url 'perfil:profile_view' %}" class="nav-link-retro">
               {% if user.profile.avatar %}
                 <img src="{{ user.profile.avatar.url }}" alt="Avatar" style="width:32px; height:32px; border-radius:50%; border:2px solid var(--retro-border); vertical-align:middle;">
               {% else %}
@@ -99,7 +108,7 @@
       </div>
 
       <div class="footer-bottom-retro">
-        &copy; {{ now|date:"Y" }} Centro de Comercio Digital. Todos los derechos reservados.
+        &copy; {% now "Y" %} Centro de Comercio Digital. Todos los derechos reservados.
       </div>
     </div>
   </footer>

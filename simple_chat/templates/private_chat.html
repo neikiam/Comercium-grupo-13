@@ -1,8 +1,8 @@
 {% extends "base.html" %}
+{% block title %}Chat con {{ other.username }}{% endblock %}
 {% block content %}
 <div class="container" style="max-width: 800px; margin: 2rem auto;">
-  <h2 style="margin-bottom: 1.5rem; text-align: center;">Chat del mercado local</h2>
-  <p style="text-align:center; margin-bottom: 1rem;"><a class="btn-retro btn-small" href="{% url 'simple_chat:private-list' %}">Ver chats privados</a></p>
+  <h2 style="margin-bottom: 1.5rem; text-align: center;">Chat con {{ other.username }}</h2>
 
   <div class="retro-panel" style="margin-bottom: 1rem;">
     <div id="chat-box" class="chat-retro"></div>
@@ -20,6 +20,7 @@
 <script>
 let lastId = 0;
 const box = document.getElementById("chat-box");
+const threadId = parseInt('{{ thread.id }}');
 const currentUserId = parseInt('{{ request.user.id }}');
 const privateStartUrlTpl = "{% url 'simple_chat:private-start' 0 %}";
 
@@ -75,7 +76,7 @@ function renderMessage(m){
 }
 
 async function poll(){
-  const res = await fetch("{% url 'simple_chat:messages-api' %}?after_id=" + lastId);
+  const res = await fetch("{% url 'simple_chat:private-messages' 0 %}".replace("0", threadId) + "?after_id=" + lastId);
   if (!res.ok) return;
   const data = await res.json();
   data.messages.forEach(m => {
@@ -83,23 +84,21 @@ async function poll(){
     lastId = Math.max(lastId, m.id);
   });
 }
-setInterval(poll, 3000); // cada 3s
+setInterval(poll, 3000);
 poll();
 
-document.getElementById("chat-form").addEventListener("submit", async (e)=>{
+const form = document.getElementById("chat-form");
+form.addEventListener("submit", async (e)=>{
   e.preventDefault();
   const text = document.getElementById("chat-text").value;
   if (!text.trim()) return;
-  const form = new FormData();
-  form.append("text", text);
-  form.append("csrfmiddlewaretoken", document.querySelector('[name=csrfmiddlewaretoken]').value);
-  const resp = await fetch("{% url 'simple_chat:post-api' %}", {
-    method: "POST",
-    body: form
-  });
+  const fd = new FormData();
+  fd.append("text", text);
+  fd.append("csrfmiddlewaretoken", document.querySelector('[name=csrfmiddlewaretoken]').value);
+  const resp = await fetch("{% url 'simple_chat:private-post' 0 %}".replace("0", threadId), { method: "POST", body: fd });
   if (resp.ok){
     document.getElementById("chat-text").value = "";
-    poll(); // traer los nuevos
+    poll();
   }
 });
 </script>
