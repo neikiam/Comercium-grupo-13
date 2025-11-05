@@ -1,0 +1,23 @@
+{% extends "admin/base.html" %}
+
+{% load static %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/retro-admin.css' %}">
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        🏪 COMMERCIUM Admin
+    </a>
+</h1>
+{% endblock %}
+
+{% block footer %}
+<div id="footer">
+    Commercium - Panel de Administración Retro | 
+    Powered by Django {% if user.is_authenticated %}| Usuario: {{ user.username }}{% endif %}
+</div>
+{% endblock %}
