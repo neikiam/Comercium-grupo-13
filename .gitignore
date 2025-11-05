@@ -1,4 +1,3 @@
-
 __pycache__/
 *.py[cod]
 *$py.class
@@ -6,14 +5,13 @@ __pycache__/
 
 db.sqlite3
 db.sqlite3-journal
-media/                 # subidas de usuario (avatars/, product_images/)
-staticfiles/           # salida de collectstatic (mantén 'static/' en control)
+media/                 
 *.log
 
 
 .env
 .env.*
-!.env.example          # conserva un ejemplo si lo usas
+!.env.example          
 
 
 .venv/
@@ -46,3 +44,10 @@ Desktop.ini
 node_modules/
 dist/
 build/
+
+# Do not track collected static assets (use collectstatic instead)
+staticfiles/
+
+docs/
+analisis_referencia.md 
+cambios_ui_retro.md 
