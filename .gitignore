@@ -48,6 +48,6 @@ build/
 # Do not track collected static assets (use collectstatic instead)
 staticfiles/
 
-docs/
-analisis_referencia.md 
-cambios_ui_retro.md 
+# Project documentation (ignore entire folder)
+docs/**
+
