@@ -76,10 +76,11 @@ def product_create(request):
             product = form.save(commit=False)
             product.seller = request.user
             product.save()
+            messages.success(request, "Producto creado correctamente.")
             return redirect("market:productlist")
     else:
         form = ProductForm()
-    return render(request, "product_form.html", {"form": form})
+    return render(request, "product_form.html", {"form": form, "is_edit": False})
 
 
 @login_required
@@ -88,11 +89,14 @@ def product_edit(request, pk):
     if request.method == "POST":
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
+            # Asegurarse de que el título no cambió
+            form.instance.title = product.title
             form.save()
+            messages.success(request, "Producto actualizado correctamente.")
             return redirect("market:productlist")
     else:
         form = ProductForm(instance=product)
-    return render(request, "product_form.html", {"form": form})
+    return render(request, "product_form.html", {"form": form, "is_edit": True})
 
 
 @login_required

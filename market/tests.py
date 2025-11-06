@@ -3,6 +3,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from .models import Product, Cart, CartItem
+from .forms import ProductForm
 
 User = get_user_model()
 
@@ -281,3 +282,63 @@ class CartViewTests(TestCase):
         response = self.client.post(reverse('market:cart-remove', args=[self.product.id]))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(cart.items.count(), 0)
+
+
+class ProductFormTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='seller', password='pass')
+        self.product = Product.objects.create(
+            seller=self.user,
+            title='Original Title',
+            category='tecnologia',
+            description='Original description',
+            price=Decimal('100.00'),
+            stock=5
+        )
+
+    def test_form_title_disabled_when_editing(self):
+        """El campo título debe estar deshabilitado al editar"""
+        form = ProductForm(instance=self.product)
+        self.assertTrue(form.fields['title'].disabled)
+        self.assertIn('readonly', form.fields['title'].widget.attrs)
+
+    def test_form_title_enabled_when_creating(self):
+        """El campo título debe estar habilitado al crear"""
+        form = ProductForm()
+        self.assertFalse(form.fields['title'].disabled)
+
+    def test_edit_product_preserves_title(self):
+        """El título no debe cambiar al editar un producto"""
+        from io import BytesIO
+        from PIL import Image
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        
+        # Crear una imagen de prueba
+        image = Image.new('RGB', (100, 100), color='red')
+        image_io = BytesIO()
+        image.save(image_io, format='JPEG')
+        image_io.seek(0)
+        image_file = SimpleUploadedFile("test.jpg", image_io.read(), content_type="image/jpeg")
+        
+        # Asignar imagen al producto original
+        self.product.image = image_file
+        self.product.save()
+        
+        self.client = Client()
+        self.client.login(username='seller', password='pass')
+        
+        response = self.client.post(
+            reverse('market:product-edit', args=[self.product.id]),
+            {
+                'title': 'Attempted New Title',  # Intento de cambiar el título
+                'category': 'moda',
+                'description': 'Updated description',
+                'price': '150.00',
+                'stock': '10',
+            }
+        )
+        
+        self.product.refresh_from_db()
+        self.assertEqual(self.product.title, 'Original Title')  # El título debe permanecer igual
+        self.assertEqual(self.product.description, 'Updated description')  # Pero otros campos sí cambian
+        self.assertEqual(self.product.price, Decimal('150.00'))
