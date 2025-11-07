@@ -7,3 +7,4 @@ Pillow==11.3.0
 mercadopago==2.3.0
 whitenoise==6.2.0
 gunicorn==20.1.0
+jwt==1.4.0
