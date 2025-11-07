@@ -6,7 +6,30 @@ from PIL import Image
 from .models import Product
 
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
+
+
 class ProductForm(forms.ModelForm):
+    additional_images = MultipleFileField(
+        required=False,
+        help_text='Puedes subir hasta 8 imágenes adicionales (máx. 5MB cada una)'
+    )
+    
     class Meta:
         model = Product
         fields = ['title', 'category', 'description', 'marca', 'price', 'stock', 'image', 'active']
@@ -135,3 +158,9 @@ class ProductForm(forms.ModelForm):
         image.seek(0)
         
         return image
+    
+    def clean_additional_images(self):
+        """Validar imágenes adicionales subidas"""
+        # Las imágenes adicionales se manejan en la vista
+        # porque request.FILES.getlist() no está disponible aquí
+        return self.cleaned_data.get('additional_images')

@@ -3,6 +3,14 @@
 {% block content %}
 <div class="container" style="max-width: 800px; margin: 2rem auto;">
   <h2 style="margin-bottom: 1.5rem; text-align: center;">Chat con {{ other.username }}</h2>
+  <p style="text-align:center; margin-bottom: 1rem; display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;">
+    <a class="btn-retro btn-small" href="{% url 'chat_interno:home' %}">⬅ Centro</a>
+    <a class="btn-retro btn-small" href="{% url 'perfil:user_profile_view' other.id %}">👤 Ver perfil</a>
+    <form method="post" action="{% url 'chat_interno:block-user' other.id %}">
+      {% csrf_token %}
+      <button class="btn-retro btn-small" type="submit">🚫 Bloquear</button>
+    </form>
+  </p>
 
   <div class="retro-panel" style="margin-bottom: 1rem;">
     <div id="chat-box" class="chat-retro"></div>

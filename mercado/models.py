@@ -70,7 +70,25 @@ class Product(models.Model):
             models.Index(fields=['active', 'stock']),
         ]
         ordering = ['-created_at']
-    
+
+
+class ProductImage(models.Model):
+    """Imágenes adicionales para productos (además del thumbnail principal)"""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="product_images/additional/")
+    order = models.PositiveIntegerField(default=0, help_text="Orden de aparición (0 = primera)")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Imagen {self.order + 1} de {self.product.title}"
+
+    class Meta:
+        ordering = ['order', 'uploaded_at']
+        indexes = [
+            models.Index(fields=['product', 'order']),
+        ]
+
+
 # Carrito
 class Cart(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

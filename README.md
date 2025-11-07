@@ -1,4 +1,4 @@
-# Marketplace Local Colaborativo
+# Comercium
 
 ![Django](https://img.shields.io/badge/Django-5.2.7-green)
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
@@ -6,7 +6,7 @@
 
 ## 📌 Descripción
 
-**Marketplace Local Colaborativo** es una plataforma tipo Wallapop o MercadoLibre "de barrio", enfocada en facilitar la compra, venta e intercambio de productos dentro de una comunidad local sin comisiones altas.
+**Comercium** es un mercado digital, enfocado en facilitar la compra, venta e intercambio de bienes dentro de una comunidad local sin comisiones altas.
 
 ### Problema real
 Mucha gente quiere vender o intercambiar cosas en su comunidad sin pagar comisiones altas a plataformas grandes.
@@ -15,9 +15,10 @@ Mucha gente quiere vender o intercambiar cosas en su comunidad sin pagar comisio
 Marketplace simple y funcional con publicación de productos, chat en tiempo real, gestión de usuarios y pagos digitales integrados.
 
 ### Innovación
-- **Foco en intercambio** además de compra/venta tradicional
+- **Foco en intercambio entre usuarios** además de compra/venta tradicional
 - **Integración con pagos digitales** (MercadoPago)
 - **Chat interno** entre usuarios para negociación directa
+- **Chat general** para la comunicación colectiva de la comunidad
 
 ---
 
@@ -27,7 +28,7 @@ Marketplace simple y funcional con publicación de productos, chat en tiempo rea
 - **Base de datos:** SQLite3 (desarrollo y producción ligera)
 - **Autenticación:** Django Allauth (login social con Google)
 - **Pagos:** MercadoPago SDK
-- **Frontend:** HTML, CSS retro personalizado
+- **Frontend:** HTML, CSS
 
 ---
 

@@ -213,11 +213,37 @@
   <div class="grid-retro">
     {% for product in page_obj %}
       <div class="card-retro">
-        {% if product.image %}
-          <div class="thumb-box-200">
-            <img src="{{ product.image.url }}" alt="{{ product.title }}" loading="lazy">
+        <!-- Carrusel de imágenes -->
+        {% if product.image or product.images.all %}
+          <div class="product-carousel" data-product-id="{{ product.id }}" style="position: relative;">
+            <div class="carousel-images" style="position: relative; width: 100%; height: 200px; overflow: hidden; background: #f0f0f0;">
+              <!-- Imagen principal (thumbnail) -->
+              {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.title }}" class="carousel-image active" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 1; transition: opacity 0.3s;" data-full-url="{{ product.image.url }}" loading="lazy">
+              {% endif %}
+              
+              <!-- Imágenes adicionales -->
+              {% for img in product.images.all %}
+                <img src="{{ img.image.url }}" alt="{{ product.title }}" class="carousel-image" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.3s;" data-full-url="{{ img.image.url }}" loading="lazy">
+              {% endfor %}
+            </div>
+            
+            <!-- Controles del carrusel (solo si hay múltiples imágenes) -->
+            {% if product.images.all|length > 0 %}
+              <button class="carousel-btn carousel-prev" style="position: absolute; left: 5px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: white; border: none; padding: 10px; cursor: pointer; border-radius: 4px; font-size: 18px; z-index: 10;" aria-label="Imagen anterior">‹</button>
+              <button class="carousel-btn carousel-next" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: white; border: none; padding: 10px; cursor: pointer; border-radius: 4px; font-size: 18px; z-index: 10;" aria-label="Imagen siguiente">›</button>
+              
+              <!-- Indicadores -->
+              <div class="carousel-indicators" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 10;">
+                <span class="indicator active" style="width: 8px; height: 8px; background: white; border-radius: 50%; display: inline-block; box-shadow: 0 0 3px rgba(0,0,0,0.5);"></span>
+                {% for img in product.images.all %}
+                  <span class="indicator" style="width: 8px; height: 8px; background: rgba(255,255,255,0.5); border-radius: 50%; display: inline-block; box-shadow: 0 0 3px rgba(0,0,0,0.5);"></span>
+                {% endfor %}
+              </div>
+            {% endif %}
           </div>
         {% endif %}
+        
         <div style="padding: 1rem;">
           {% if not product.is_available %}
             <span style="display:inline-block; background: #f44336; color: #fff; padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.8rem; margin-bottom: 0.5rem;">Sin stock</span>
@@ -269,4 +295,118 @@
     {% endif %}
   </div>
 </div>
+
+<!-- Modal para imagen completa -->
+<div id="imageModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); padding: 20px;">
+  <span id="closeModal" style="position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 10000;">&times;</span>
+  <img id="modalImage" style="margin: auto; display: block; max-width: 90%; max-height: 90%; object-fit: contain; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+</div>
+
+<script>
+(function() {
+  // Carrusel de imágenes
+  document.querySelectorAll('.product-carousel').forEach(carousel => {
+    const images = carousel.querySelectorAll('.carousel-image');
+    const indicators = carousel.querySelectorAll('.indicator');
+    const prevBtn = carousel.querySelector('.carousel-prev');
+    const nextBtn = carousel.querySelector('.carousel-next');
+    let currentIndex = 0;
+    
+    if (images.length <= 1) return; // No hay carrusel si solo hay una imagen
+    
+    function showImage(index) {
+      // Ocultar todas las imágenes
+      images.forEach(img => img.style.opacity = '0');
+      indicators.forEach(ind => {
+        ind.style.background = 'rgba(255,255,255,0.5)';
+        ind.classList.remove('active');
+      });
+      
+      // Mostrar imagen actual
+      images[index].style.opacity = '1';
+      images[index].classList.add('active');
+      indicators[index].style.background = 'white';
+      indicators[index].classList.add('active');
+      currentIndex = index;
+    }
+    
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const newIndex = currentIndex > 0 ? currentIndex - 1 : images.length - 1;
+        showImage(newIndex);
+      });
+    }
+    
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const newIndex = currentIndex < images.length - 1 ? currentIndex + 1 : 0;
+        showImage(newIndex);
+      });
+    }
+    
+    // Click en imagen para abrir modal
+    images.forEach(img => {
+      img.addEventListener('click', function(e) {
+        if (e.target === prevBtn || e.target === nextBtn) return;
+        const fullUrl = this.getAttribute('data-full-url');
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        modal.style.display = 'block';
+        modalImg.src = fullUrl;
+      });
+      img.style.cursor = 'pointer';
+    });
+  });
+  
+  // Modal de imagen
+  const modal = document.getElementById('imageModal');
+  const closeModal = document.getElementById('closeModal');
+  
+  if (closeModal) {
+    closeModal.addEventListener('click', function() {
+      modal.style.display = 'none';
+    });
+  }
+  
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  }
+  
+  // Cerrar modal con ESC
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal.style.display === 'block') {
+      modal.style.display = 'none';
+    }
+  });
+  
+  // Reset al cargar página (asegurar que thumbnail sea la primera)
+  window.addEventListener('load', function() {
+    document.querySelectorAll('.product-carousel').forEach(carousel => {
+      const images = carousel.querySelectorAll('.carousel-image');
+      const indicators = carousel.querySelectorAll('.indicator');
+      if (images.length > 0) {
+        images.forEach(img => img.style.opacity = '0');
+        indicators.forEach(ind => {
+          ind.style.background = 'rgba(255,255,255,0.5)';
+          ind.classList.remove('active');
+        });
+        images[0].style.opacity = '1';
+        images[0].classList.add('active');
+        if (indicators[0]) {
+          indicators[0].style.background = 'white';
+          indicators[0].classList.add('active');
+        }
+      }
+    });
+  });
+})();
+</script>
 {% endblock %}
