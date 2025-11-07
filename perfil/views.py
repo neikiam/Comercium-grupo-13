@@ -1,17 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth import update_session_auth_hash, get_user_model
+from django.contrib.auth import get_user_model
 from .forms import ProfileForm
-from market.models import Product
+from mercado.models import Product
 
 User = get_user_model()
 
 @login_required
 def profile_view(request):
     profile = request.user.profile
-    user_products = Product.objects.filter(seller=request.user).select_related('seller').order_by('-created_at')
+    # Mostrar solo productos activos del usuario para evitar ver eliminados o pausados
+    user_products = Product.objects.filter(seller=request.user, active=True).select_related('seller').order_by('-created_at')
     
     context = {
         "profile": profile,
@@ -42,20 +42,8 @@ def edit_profile(request):
     if request.method == "POST":
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         
-        # Verificar si se marcó el checkbox para eliminar avatar
-        should_clear_avatar = request.POST.get('avatar-clear') == 'on'
-        
         if form.is_valid():
-            # Guardar el formulario pero sin hacer commit todavía
-            profile_instance = form.save(commit=False)
-            
-            # Si se marcó eliminar y hay un avatar, eliminarlo
-            if should_clear_avatar and profile.avatar:
-                profile.avatar.delete(save=False)
-                profile_instance.avatar = None
-            
-            # Guardar los cambios
-            profile_instance.save()
+            form.save()
             messages.success(request, "Tu perfil ha sido actualizado correctamente.")
             return redirect("perfil:profile_view")
         else:
@@ -67,27 +55,15 @@ def edit_profile(request):
 
 
 @login_required
-def change_password(request):
+def delete_avatar(request):
     if request.method == "POST":
-        form = PasswordChangeForm(user=request.user, data=request.POST)
-        if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)
-            messages.success(request, "Contraseña actualizada correctamente.")
-            return redirect("perfil:profile_view")
+        profile = request.user.profile
+        if profile.avatar:
+            profile.avatar.delete(save=False)
+            profile.avatar = None
+            profile.save()
+            messages.success(request, "Tu foto de perfil ha sido eliminada.")
         else:
-            messages.error(request, "Error al cambiar la contraseña. Revisa los datos.")
-    else:
-        form = PasswordChangeForm(user=request.user)
-
-    return render(request, "profile_change_password.html", {"form": form})
-
-
-@login_required
-def delete_profile(request):
-    if request.method == "POST":
-        user = request.user
-        user.delete()
-        messages.success(request, "Tu cuenta ha sido eliminada correctamente.")
-        return redirect("home")
-    return render(request, "profile_delete_confirm.html")
+            messages.info(request, "No tienes una foto de perfil para eliminar.")
+        return redirect("perfil:edit_profile")
+    return redirect("perfil:edit_profile")

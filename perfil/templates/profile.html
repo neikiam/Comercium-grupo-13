@@ -24,7 +24,7 @@
     {% if is_own_profile %}
       <a href="{% url 'perfil:edit_profile' %}" class="btn-retro">✏️ Editar perfil</a>
     {% else %}
-      <a href="{% url 'simple_chat:private_start' profile.user.id %}" class="btn-retro">💬 Mensaje privado</a>
+      <a href="{% url 'chat_interno:private-start' profile.user.id %}" class="btn-retro">💬 Mensaje privado</a>
     {% endif %}
   </div>
 
@@ -38,9 +38,11 @@
         {% for product in user_products %}
           <div class="card-retro">
             {% if product.image %}
-              <img src="{{ product.image.url }}" alt="{{ product.title }}" loading="lazy" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px 8px 0 0;">
+              <div class="thumb-box-200">
+                <img src="{{ product.image.url }}" alt="{{ product.title }}" loading="lazy">
+              </div>
             {% else %}
-              <div style="width: 100%; height: 200px; background: #e0e0e0; display: flex; align-items: center; justify-content: center; border-radius: 8px 8px 0 0; color: #999;">Sin imagen</div>
+              <div class="thumb-box-200" style="background:#f2f2f2; color:#999;">Sin imagen</div>
             {% endif %}
             <div style="padding: 1rem;">
               {% if product.stock <= 0 %}
@@ -49,17 +51,17 @@
                 <span style="display:inline-block; background: #ff9800; color: #fff; padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.8rem; margin-bottom: 0.5rem;">Pocas unidades</span>
               {% endif %}
               <h3 style="margin: 0.5rem 0; font-size: 1.1rem; text-align: center;">
-                <a href="{% url 'market:product-detail' product.id %}" style="color: inherit; text-decoration: none;">{{ product.title }}</a>
+                <a href="{% url 'mercado:product-detail' product.id %}" style="color: inherit; text-decoration: none;">{{ product.title }}</a>
               </h3>
               <p style="font-size: 1.1rem; font-weight: bold; color: var(--retro-accent); text-align: center; margin: 0.75rem 0;">${{ product.price }}</p>
               
               {% if is_own_profile %}
                 <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
-                  <a href="{% url 'market:product-edit' product.id %}" class="btn-retro-secondary btn-small" style="flex: 1; text-align: center;">✏️ Editar</a>
-                  <a href="{% url 'market:product-delete' product.id %}" class="btn-retro-danger btn-small" style="flex: 1; text-align: center;">🗑️ Eliminar</a>
+                  <a href="{% url 'mercado:product-edit' product.id %}" class="btn-retro-secondary btn-small" style="flex: 1; text-align: center;">✏️ Editar</a>
+                  <a href="{% url 'mercado:product-delete' product.id %}?next={{ request.get_full_path|urlencode }}" class="btn-retro-danger btn-small" style="flex: 1; text-align: center;">🗑️ Eliminar</a>
                 </div>
               {% else %}
-                <a href="{% url 'market:product-detail' product.id %}" class="btn-retro btn-small" style="width: 100%; text-align: center; display: block;">Ver detalles</a>
+                <a href="{% url 'mercado:product-detail' product.id %}" class="btn-retro btn-small" style="width: 100%; text-align: center; display: block;">Ver detalles</a>
               {% endif %}
             </div>
           </div>

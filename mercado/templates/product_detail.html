@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ product.title }} • Detalle{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 2rem; margin-bottom: 2rem;">
+  <div class="retro-panel">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+      <div>
+        {% if product.image %}
+          <div class="image-box-detail">
+            <img src="{{ product.image.url }}" alt="{{ product.title }}" loading="lazy">
+          </div>
+        {% endif %}
+      </div>
+      <div>
+        <h2 style="margin-bottom: 0.5rem;">{{ product.title }}</h2>
+  <p style="color: #666; margin-bottom: 1rem;">Marca: {{ product.marca }} · Categoría: {{ product.get_category_display }}</p>
+        <h3 style="color: var(--retro-accent); margin-bottom: 1rem;">${{ product.price }}</h3>
+        <p style="margin-bottom: 1rem;">{{ product.description }}</p>
+        
+        <p style="margin-bottom: 1.5rem; color: #555;">
+          <strong>Vendedor:</strong> 
+          <a href="{% url 'perfil:user_profile_view' product.seller.id %}" style="color: var(--retro-accent);">{{ product.seller.username }}</a>
+          {% if user != product.seller and user.is_authenticated %}
+            <a href="{% url 'chat_interno:private-start' product.seller.id %}" class="btn-retro" style="margin-left: 0.5rem; font-size: 0.85rem; padding: 0.3rem 0.8rem;">💬 Contactar</a>
+          {% endif %}
+        </p>
+        
+        {% if user == product.seller %}
+          <div style="display:flex; gap:0.5rem; margin-top:0.75rem;">
+            <a href="{% url 'mercado:product-edit' product.id %}" class="btn-retro-secondary">✏️ Editar</a>
+            <a href="{% url 'mercado:product-delete' product.id %}?next={% url 'perfil:profile_view' %}" class="btn-retro-danger">🗑️ Eliminar</a>
+          </div>
+        {% else %}
+          {% if product.is_available %}
+            <form method="post" action="{% url 'mercado:add-to-cart' product.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn-retro">🛒 Agregar al carrito</button>
+            </form>
+          {% else %}
+            <span style="display:inline-block; background: #f44336; color: #fff; padding: 0.3rem 0.6rem; border-radius: 6px; font-size: 0.9rem;">Sin stock</span>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

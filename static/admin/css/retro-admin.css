@@ -1,523 +1,505 @@
-/* Colores */
+/* ========================================
+   ADMIN RETRO - Panel de Administración
+   Estilo consistente con el tema retro principal
+   ======================================== */
+
+/* Variables del admin retro */
 :root {
-    --retro-primary: #2c5f6f;
-    --retro-secondary: #f4a261;
-    --retro-accent: #e76f51;
-    --retro-bg: #fef9f3;
-    --retro-card: #fef6ea;
-    --retro-card-dark: #3d3d3d;
-    --retro-border: #d4a373;
-    --retro-text: #2c3e50;
-    --retro-text-light: #f4e4c1;
-    --retro-text-contrast: #ffffff;
-    --retro-success: #6a994e;
-    --retro-warning: #f4a261;
-    --retro-danger: #e76f51;
+  --admin-bg: #8b9a99;
+  --admin-panel: #b8c5c4;
+  --admin-panel-light: #c8d5d4;
+  --admin-text: #2d3332;
+  --admin-text-light: #5a6968;
+  --admin-primary: #3e7d7d;
+  --admin-primary-dark: #2e5d5d;
+  --admin-accent: #e09b5d;
+  --admin-accent-hover: #d08545;
+  --admin-border: #6d7a79;
+  --admin-shadow: rgba(0, 0, 0, 0.3);
 }
 
-/* Estructura */
+/* ========== BODY Y CONTENEDORES ========== */
+body {
+  background: var(--admin-bg) !important;
+  font-family: 'Georgia', 'Times New Roman', serif !important;
+  color: var(--admin-text) !important;
+}
 
+#container {
+  background: var(--admin-panel) !important;
+  border: 2px solid var(--admin-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.2) !important;
+}
+
+#content {
+  background: var(--admin-panel-light) !important;
+  border-radius: 8px !important;
+  padding: 20px !important;
+}
+
+/* Sobrescribir TODOS los fondos blancos */
+div, section, article, aside,
+.dashboard #content,
+#content-main,
+.colM #content,
+.colMS #content {
+  background: transparent !important;
+}
+
+/* Forzar color de fondo gris en áreas blancas */
+.dashboard .module table,
+#content-main > div,
+.results,
+#result_list {
+  background: var(--admin-panel-light) !important;
+}
+
+/* ========== HEADER CON DEGRADADO AZUL/TURQUESA ========== */
 #header {
-    background: linear-gradient(135deg, var(--retro-primary) 0%, #1e4651 100%);
-    border-bottom: 4px solid var(--retro-border);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  background: linear-gradient(135deg, #3e7d7d 0%, #2e5d5d 100%) !important;
+  border-bottom: 3px solid var(--admin-border) !important;
+  box-shadow: 0 3px 8px var(--admin-shadow) !important;
+  padding: 10px 20px !important;
 }
 
-#branding h1, #branding h1 a:link, #branding h1 a:visited {
-    color: #fef9f3;
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    letter-spacing: 1px;
+#branding h1,
+#branding h1 a {
+  color: #ffffff !important;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5) !important;
+  font-family: 'Georgia', serif !important;
+  font-weight: bold !important;
 }
 
 #user-tools {
-    background: linear-gradient(135deg, rgba(244, 162, 97, 0.25) 0%, rgba(231, 111, 81, 0.2) 100%);
-    padding: 12px 20px;
-    border-radius: 8px;
-    backdrop-filter: blur(5px);
+  color: #ffffff !important;
 }
 
 #user-tools a {
-    color: var(--retro-text-contrast);
-    font-weight: 600;
-    text-decoration: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    transition: background 0.2s;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  color: #e0f0f0 !important;
+  text-decoration: none !important;
+  padding: 0.3rem 0.6rem !important;
+  border-radius: 6px !important;
+  background: rgba(255,255,255,0.1) !important;
+  transition: all 0.2s !important;
 }
 
 #user-tools a:hover {
-    background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.2) !important;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
 }
 
-/* Navegación */
+/* ========== MÓDULOS Y PANELES ========== */
+.module,
+.dashboard .module {
+  background: var(--admin-panel) !important;
+  border: 2px solid var(--admin-border) !important;
+  border-radius: 10px !important;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.2) !important;
+  margin-bottom: 15px !important;
+}
 
+.module h2,
+.module caption,
+th {
+  background: linear-gradient(135deg, var(--admin-accent) 0%, var(--admin-accent-hover) 100%) !important;
+  color: #2d3332 !important;
+  border-radius: 8px 8px 0 0 !important;
+  padding: 10px 15px !important;
+  font-family: 'Georgia', serif !important;
+  text-shadow: 1px 1px 1px rgba(255,255,255,0.4) !important;
+  border-bottom: 2px solid var(--admin-border) !important;
+  font-weight: bold !important;
+}
+
+.module tr th a,
+.module caption a {
+  color: #1a2524 !important;
+  font-weight: bold !important;
+}
+
+.module tbody tr td a {
+  color: var(--admin-primary) !important;
+  font-weight: 500 !important;
+}
+
+/* ========== TABLAS ========== */
+table {
+  background: var(--admin-panel-light) !important;
+  border: 2px solid var(--admin-border) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+thead th {
+  background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%) !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid var(--admin-border) !important;
+  padding: 10px !important;
+  text-align: left !important;
+  font-weight: bold !important;
+}
+
+thead th a {
+  color: #e0f0f0 !important;
+  font-weight: bold !important;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
+}
+
+thead th a:hover {
+  color: #ffffff !important;
+}
+
+tbody tr {
+  background: rgba(255,255,255,0.6) !important;
+  border-bottom: 1px solid var(--admin-border) !important;
+}
+
+tbody tr:hover {
+  background: rgba(255,255,255,0.8) !important;
+}
+
+tbody tr:nth-child(even) {
+  background: rgba(255,255,255,0.4) !important;
+}
+
+tbody tr:nth-child(even):hover {
+  background: rgba(255,255,255,0.7) !important;
+}
+
+tbody tr td {
+  color: #2d3332 !important;
+}
+
+tbody tr td a {
+  color: #2e5d5d !important;
+  font-weight: 500 !important;
+}
+
+tbody tr td a:hover {
+  color: #1e4d4d !important;
+  text-decoration: underline !important;
+}
+
+/* ========== BOTONES ========== */
+.button,
+button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button {
+  background: var(--admin-accent) !important;
+  color: white !important;
+  border: 2px solid var(--admin-border) !important;
+  padding: 0.6rem 1.2rem !important;
+  border-radius: 8px !important;
+  font-size: 1rem !important;
+  font-family: 'Georgia', serif !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.2) !important;
+  transition: all 0.2s !important;
+  text-align: center !important;
+}
+
+.button:hover,
+button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+.submit-row input:hover,
+a.button:hover {
+  background: var(--admin-accent-hover) !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.3) !important;
+  color: white !important;
+}
+
+.button:active,
+button:active,
+input[type="submit"]:active {
+  transform: translate(1px, 1px) !important;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.2) !important;
+}
+
+/* Botón primario/guardar */
+.default,
+.submit-row input.default {
+  background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%) !important;
+}
+
+.default:hover,
+.submit-row input.default:hover {
+  background: linear-gradient(135deg, var(--admin-primary-dark) 0%, #1e4d4d 100%) !important;
+}
+
+/* Botón eliminar */
+.deletelink,
+.deletelink-box a {
+  background: #a86464 !important;
+  border-color: #8b4b4b !important;
+}
+
+.deletelink:hover {
+  background: #944545 !important;
+}
+
+/* ========== FORMULARIOS ========== */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+textarea,
+select {
+  background: rgba(255,255,255,0.8) !important;
+  border: 2px solid var(--admin-border) !important;
+  border-radius: 6px !important;
+  padding: 0.6rem !important;
+  font-family: 'Georgia', serif !important;
+  font-size: 1rem !important;
+  box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+  background: white !important;
+  border-color: var(--admin-primary) !important;
+  outline: none !important;
+}
+
+/* ========== BREADCRUMBS ========== */
 .breadcrumbs {
-    background: var(--retro-bg);
-    border-bottom: 2px solid var(--retro-border);
-    padding: 12px 20px;
-    font-family: 'Courier New', monospace;
+  background: var(--admin-panel) !important;
+  border: 2px solid var(--admin-border) !important;
+  border-radius: 8px !important;
+  padding: 10px 15px !important;
+  margin-bottom: 15px !important;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.1) !important;
+  color: #2d3332 !important;
 }
 
 .breadcrumbs a {
-    color: var(--retro-primary);
-    font-weight: 600;
+  color: #2e5d5d !important;
+  text-decoration: none !important;
+  font-weight: bold !important;
 }
 
 .breadcrumbs a:hover {
-    color: var(--retro-accent);
-    text-decoration: underline;
+  text-decoration: underline !important;
+  color: #1e4d4d !important;
 }
 
-/* Principal */
-
-#content {
-    background: var(--retro-bg);
-    padding: 30px;
-}
-
-.module {
-    background: linear-gradient(135deg, var(--retro-card) 0%, #fff8e7 100%);
-    border: 3px solid var(--retro-border);
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    margin-bottom: 25px;
-    overflow: hidden;
-}
-
-.module h2, .module caption {
-    background: linear-gradient(135deg, var(--retro-secondary) 0%, #e09056 100%);
-    color: #2c3e50;
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    padding: 14px 20px;
-    border-bottom: 3px solid var(--retro-border);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* Tablas */
-
-#result_list {
-    border: none;
-}
-
-#result_list thead th {
-    background: var(--retro-primary);
-    color: white;
-    font-weight: bold;
-    text-transform: uppercase;
-    padding: 14px 12px;
-    border-bottom: 3px solid var(--retro-border);
-}
-
-#result_list thead th a {
-    color: white;
-}
-
-#result_list tbody tr {
-    border-bottom: 2px solid #e8dcc4;
-    transition: background 0.2s;
-}
-
-#result_list tbody tr:hover {
-    background: linear-gradient(90deg, #fff8e7 0%, #fef6ea 100%);
-}
-
-#result_list tbody tr.alt {
-    background: #fefbf6;
-}
-
-#result_list tbody tr.alt:hover {
-    background: linear-gradient(90deg, #fff8e7 0%, #fef6ea 100%);
-}
-
-#result_list tbody td {
-    padding: 12px;
-    color: var(--retro-text);
-}
-
-#result_list tbody td a {
-    color: var(--retro-primary);
-    font-weight: 600;
-}
-
-#result_list tbody td a:hover {
-    color: var(--retro-accent);
-}
-
-/* Botones */
-
-.button, input[type="submit"], input[type="button"], .submit-row input, button {
-    background: linear-gradient(135deg, var(--retro-secondary) 0%, #e09056 100%);
-    color: #2c3e50;
-    border: 3px solid var(--retro-border);
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-weight: bold;
-    font-family: 'Courier New', monospace;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-}
-
-.button:hover, input[type="submit"]:hover, input[type="button"]:hover, .submit-row input:hover, button:hover {
-    background: linear-gradient(135deg, #e09056 0%, var(--retro-secondary) 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-}
-
-.button:active, input[type="submit"]:active, input[type="button"]:active, button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-}
-
-.deletelink, .deletelink-box a {
-    background: linear-gradient(135deg, var(--retro-danger) 0%, #d85a40 100%);
-    color: white !important;
-}
-
-.deletelink:hover, .deletelink-box a:hover {
-    background: linear-gradient(135deg, #d85a40 0%, var(--retro-danger) 100%);
-}
-
-.default, input[type="submit"].default {
-    background: linear-gradient(135deg, var(--retro-primary) 0%, #1e4651 100%);
-    color: white;
-}
-
-.default:hover, input[type="submit"].default:hover {
-    background: linear-gradient(135deg, #1e4651 0%, var(--retro-primary) 100%);
-}
-
-/* Formularios */
-
-.form-row {
-    padding: 16px;
-    border-bottom: 1px solid #e8dcc4;
-}
-
-.form-row:hover {
-    background: #fefbf6;
-}
-
-input[type="text"], input[type="password"], input[type="email"], input[type="url"],
-input[type="number"], input[type="date"], input[type="time"], textarea, select {
-    border: 2px solid var(--retro-border);
-    border-radius: 6px;
-    padding: 10px;
-    font-family: 'Courier New', monospace;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus,
-input[type="url"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
-    border-color: var(--retro-primary);
-    box-shadow: 0 0 8px rgba(44, 95, 111, 0.3);
-    outline: none;
-}
-
-.help {
-    color: var(--retro-text-light);
-    font-style: italic;
-    font-size: 0.9em;
-}
-
-.errornote {
-    background: var(--retro-danger);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    border: 3px solid #d85a40;
-}
-
-ul.errorlist {
-    background: #ffe8e5;
-    border-left: 4px solid var(--retro-danger);
-    padding: 12px;
-    border-radius: 4px;
-}
-
-/*Páginas Index (Home) */
-
-#content-main {
-    width: 100%;
-}
-
-.app-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.app-list .module {
-    background: linear-gradient(135deg, var(--retro-card-dark) 0%, #2a2a2a 100%);
-    border: 3px solid var(--retro-secondary);
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.app-list .module h2 {
-    background: linear-gradient(135deg, var(--retro-secondary) 0%, var(--retro-accent) 100%);
-}
-
-.app-list .module:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(244, 162, 97, 0.4);
-}
-
-.app-list h2 {
-    font-size: 1.3em;
-}
-
-.app-list td {
-    padding: 10px 15px;
-    background: transparent;
-}
-
-.app-list td a {
-    color: var(--retro-text-light);
-    font-weight: 600;
-    text-decoration: none;
-    font-family: 'Courier New', monospace;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-}
-
-.app-list td a:hover {
-    color: var(--retro-text-contrast);
-    text-decoration: underline;
-}
-
-/* Mensajes y alertas */
-
+/* ========== MENSAJES ========== */
 .messagelist {
-    margin: 0 0 20px 0;
-    padding: 0;
+  margin-bottom: 15px !important;
 }
 
 .messagelist li {
-    padding: 14px 20px;
-    margin: 10px 0;
-    border-radius: 8px;
-    font-weight: 600;
-    border: 3px solid;
+  background: var(--admin-panel) !important;
+  border: 2px solid var(--admin-border) !important;
+  border-radius: 8px !important;
+  padding: 10px 15px !important;
+  margin-bottom: 10px !important;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.1) !important;
 }
 
 .messagelist .success {
-    background: #d8f3dc;
-    color: #2d6a4f;
-    border-color: var(--retro-success);
+  border-left: 4px solid #6b8b6b !important;
 }
 
 .messagelist .warning {
-    background: #fff3cd;
-    color: #856404;
-    border-color: var(--retro-warning);
+  border-left: 4px solid #e09b5d !important;
 }
 
 .messagelist .error {
-    background: #ffe8e5;
-    color: #a52a2a;
-    border-color: var(--retro-danger);
+  border-left: 4px solid #a86464 !important;
 }
 
-/* Búsqueda */
-
-#changelist-filter {
-    background: linear-gradient(135deg, var(--retro-card) 0%, #fff8e7 100%);
-    border: 3px solid var(--retro-border);
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+/* ========== ENLACES ========== */
+a {
+  color: #2e5d5d !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
 }
 
-#changelist-filter h2 {
-    background: var(--retro-primary);
-    color: white;
-    padding: 10px;
-    border-radius: 6px;
-    margin: 0 -15px 15px -15px;
+a:hover {
+  text-decoration: underline !important;
+  color: #1e4d4d !important;
 }
 
-#changelist-filter h3 {
-    color: var(--retro-primary);
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    margin-top: 15px;
+/* Enlaces de acción (Agregar, Modificar, etc) */
+.addlink,
+.changelink,
+.viewlink {
+  color: #2e5d5d !important;
+  font-weight: bold !important;
 }
 
-#changelist-filter a {
-    color: var(--retro-text);
-    display: block;
-    padding: 6px 10px;
-    border-radius: 4px;
-    transition: background 0.2s;
+.addlink:hover,
+.changelink:hover,
+.viewlink:hover {
+  color: #1e4d4d !important;
 }
 
-#changelist-filter a:hover {
-    background: linear-gradient(90deg, #fff8e7 0%, #fef6ea 100%);
-    text-decoration: none;
-}
-
-#changelist-filter li.selected a {
-    background: linear-gradient(135deg, var(--retro-secondary) 0%, var(--retro-accent) 100%);
-    color: var(--retro-text-contrast);
-    font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-}
-
-#toolbar {
-    background: linear-gradient(135deg, var(--retro-card) 0%, #fff8e7 100%);
-    border: 3px solid var(--retro-border);
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 20px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-}
-
-#toolbar form input[type="text"] {
-    padding: 8px 12px;
-    border: 2px solid var(--retro-border);
-    border-radius: 6px;
-}
-
-/* Acciones */
-
-.actions {
-    background: linear-gradient(135deg, var(--retro-card) 0%, #fff8e7 100%);
-    border: 3px solid var(--retro-border);
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 20px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-}
-
-.actions label {
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    color: var(--retro-text);
-}
-
-.actions select {
-    border: 2px solid var(--retro-border);
-    padding: 8px;
-    border-radius: 6px;
-}
-
-.actions button {
-    margin-left: 10px;
-}
-
-/* Paginación */
-
+/* ========== PAGINACIÓN ========== */
 .paginator {
-    padding: 15px;
-    text-align: center;
-    font-family: 'Courier New', monospace;
+  background: var(--admin-panel) !important;
+  border: 2px solid var(--admin-border) !important;
+  border-radius: 8px !important;
+  padding: 10px !important;
+  margin-top: 15px !important;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.1) !important;
 }
 
-.paginator a, .paginator .this-page {
-    padding: 8px 14px;
-    margin: 0 4px;
-    border: 2px solid var(--retro-border);
-    border-radius: 6px;
-    text-decoration: none;
-    color: var(--retro-primary);
-    background: linear-gradient(135deg, var(--retro-card) 0%, #fff8e7 100%);
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: all 0.2s;
+.paginator a {
+  background: var(--admin-accent) !important;
+  color: white !important;
+  border: 2px solid var(--admin-border) !important;
+  padding: 0.4rem 0.8rem !important;
+  border-radius: 6px !important;
+  margin: 0 2px !important;
+  display: inline-block !important;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.2) !important;
+  transition: all 0.2s !important;
 }
 
 .paginator a:hover {
-    background: linear-gradient(135deg, var(--retro-secondary) 0%, var(--retro-accent) 100%);
-    color: var(--retro-text-contrast);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  background: var(--admin-accent-hover) !important;
+  text-decoration: none !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.3) !important;
 }
 
-.paginator .this-page {
-    background: linear-gradient(135deg, var(--retro-primary) 0%, #1e4651 100%);
-    color: var(--retro-text-contrast);
-    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-}
-
-/*  */
-
-.inline-group {
-    border: 3px solid var(--retro-border);
-    border-radius: 12px;
-    margin-bottom: 20px;
-    overflow: hidden;
-}
-
-.inline-group .tabular {
-    border: none;
-}
-
-.inline-group .module h2 {
-    background: var(--retro-primary);
-    color: white;
-}
-
-/*  */
-
-@media (max-width: 768px) {
-    .app-list {
-        grid-template-columns: 1fr;
-    }
-    
-    #content {
-        padding: 15px;
-    }
-}
-
-/* */
-
-.object-tools {
-    float: right;
-}
-
-.object-tools li {
-    display: inline-block;
-    margin-left: 10px;
-}
-
-.object-tools a {
-    background: linear-gradient(135deg, var(--retro-success) 0%, #588f47 100%);
-    color: white;
-    padding: 10px 18px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    border: 3px solid #527f43;
-    display: inline-block;
-    transition: all 0.2s;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-}
-
-.object-tools a:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-}
-
-
-input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-}
-
-/* Footer */
+/* ========== FOOTER ========== */
 #footer {
-    background: var(--retro-primary);
-    color: white;
-    padding: 15px;
-    text-align: center;
-    border-top: 4px solid var(--retro-border);
-    font-family: 'Courier New', monospace;
+  background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%) !important;
+  color: #ffffff !important;
+  border-top: 3px solid var(--admin-border) !important;
+  padding: 15px !important;
+  text-align: center !important;
+  margin-top: 20px !important;
+  border-radius: 0 0 8px 8px !important;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+}
+
+/* ========== FORMULARIO DE LOGIN ========== */
+body.login {
+  background: var(--admin-bg) !important;
+}
+
+#login {
+  background: var(--admin-panel) !important;
+  border: 2px solid var(--admin-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.2) !important;
+}
+
+#login #header {
+  border-radius: 10px 10px 0 0 !important;
+}
+
+#login form {
+  background: var(--admin-panel-light) !important;
+  padding: 20px !important;
+}
+
+#login .form-row {
+  margin-bottom: 15px !important;
+}
+
+#login .form-row label {
+  color: var(--admin-text) !important;
+}
+
+#login .submit-row {
+  background: transparent !important;
+  border: none !important;
+  padding: 15px 0 0 0 !important;
+}
+
+/* Forzar fondo en contenedor de login */
+#content {
+  background: transparent !important;
+}
+
+body.login #container {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* ========== ACCIONES ========== */
+.actions {
+  background: var(--admin-panel) !important;
+  border: 2px solid var(--admin-border) !important;
+  border-radius: 8px !important;
+  padding: 10px !important;
+  margin-bottom: 15px !important;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.1) !important;
+}
+
+.actions select {
+  background: rgba(255,255,255,0.9) !important;
+}
+
+/* ========== FILTROS ========== */
+#changelist-filter {
+  background: var(--admin-panel) !important;
+  border: 2px solid var(--admin-border) !important;
+  border-radius: 10px !important;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.2) !important;
+}
+
+#changelist-filter h2 {
+  background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%) !important;
+  color: #ffffff !important;
+  font-weight: bold !important;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
+}
+
+#changelist-filter li {
+  border-bottom: 1px solid var(--admin-border) !important;
+}
+
+#changelist-filter li a {
+  color: #2d3332 !important;
+  font-weight: 500 !important;
+}
+
+#changelist-filter li a:hover {
+  color: #1e4d4d !important;
+}
+
+#changelist-filter li.selected a {
+  background: var(--admin-accent) !important;
+  color: #2d3332 !important;
+  border-radius: 6px !important;
+  padding: 5px 10px !important;
+  font-weight: bold !important;
+  text-shadow: 1px 1px 1px rgba(255,255,255,0.3) !important;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  #header {
+    padding: 10px !important;
+  }
+  
+  #content {
+    padding: 10px !important;
+  }
+  
+  .module h2,
+  thead th {
+    font-size: 1rem !important;
+    padding: 8px !important;
+  }
 }
