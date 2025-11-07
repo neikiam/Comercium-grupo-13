@@ -1,5 +1,6 @@
 from .models import Cart
 
+
 def cart(request):
     count = 0
     user = getattr(request, "user", None)

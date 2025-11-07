@@ -1,7 +1,8 @@
-from pathlib import Path
 import os
-from dotenv import load_dotenv
+from pathlib import Path
+
 import dj_database_url
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -55,12 +56,10 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 
-ACCOUNT_SIGNUP_FIELDS = ["email", "username", "password1", "password2"]
+ACCOUNT_SIGNUP_FIELDS = ["email", "username"]
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-ACCOUNT_EMAIL_REQUIRED = True 
+ACCOUNT_LOGIN_METHODS = {"email", "username"}
 ACCOUNT_UNIQUE_EMAIL = True 
-ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "optional"  
 
 SESSION_COOKIE_AGE = 30 * 60
@@ -172,9 +171,39 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Filtro personalizado para remover datos sensibles de los logs
+class SensitiveDataFilter:
+    """Filtro de logging para prevenir exposición de datos sensibles en logs."""
+    
+    # Lista de campos sensibles que deben ser censurados
+    SENSITIVE_KEYS = [
+        'password', 'token', 'secret', 'api_key', 'authorization',
+        'csrf', 'session', 'cookie', 'credit_card', 'ssn', 'cvv',
+        'access_token', 'refresh_token', 'private_key'
+    ]
+    
+    def filter(self, record):
+        """Filtra y censura información sensible en los mensajes de log."""
+        if hasattr(record, 'msg'):
+            msg = str(record.msg)
+            # Censurar datos sensibles comunes
+            for key in self.SENSITIVE_KEYS:
+                if key in msg.lower():
+                    # Reemplazar con asteriscos
+                    import re
+                    pattern = rf"{key}['\"]?\s*[:=]\s*['\"]?([^'\"\s,}}]+)"
+                    msg = re.sub(pattern, f"{key}=****", msg, flags=re.IGNORECASE)
+            record.msg = msg
+        return True
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'sensitive_data': {
+            '()': 'config.settings.SensitiveDataFilter',
+        },
+    },
     'formatters': {
         'verbose': {
             'format': '{levelname} {asctime} {module} {message}',
@@ -187,6 +216,7 @@ LOGGING = {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': BASE_DIR / 'logs' / 'django.log',
             'formatter': 'verbose',
+            'filters': ['sensitive_data'],
             'maxBytes': 10 * 1024 * 1024,
             'backupCount': 5,
         },
@@ -194,6 +224,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
+            'filters': ['sensitive_data'],
         },
     },
     'root': {

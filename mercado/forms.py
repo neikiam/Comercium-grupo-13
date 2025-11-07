@@ -1,4 +1,8 @@
+import io
+
 from django import forms
+from PIL import Image
+
 from .models import Product
 
 
@@ -92,7 +96,42 @@ class ProductForm(forms.ModelForm):
         image = self.cleaned_data.get('image')
         if not image:
             raise forms.ValidationError("La imagen principal es obligatoria.")
+        
         # Validar tamaño máximo (5MB)
         if image.size > 5 * 1024 * 1024:
             raise forms.ValidationError("La imagen no puede superar los 5MB.")
+        
+        try:
+            # Abrir y verificar que sea una imagen válida
+            img = Image.open(image)
+            img.verify()
+            
+            # Verificar formato permitido
+            allowed_formats = ['JPEG', 'PNG', 'GIF', 'WEBP']
+            if img.format not in allowed_formats:
+                raise forms.ValidationError(
+                    f"Formato de imagen no permitido. Formatos aceptados: {', '.join(allowed_formats)}"
+                )
+            
+            # Verificar dimensiones razonables
+            max_dimension = 10000  # 10000 píxeles máximo por lado
+            if img.width > max_dimension or img.height > max_dimension:
+                raise forms.ValidationError(
+                    f"Las dimensiones de la imagen son demasiado grandes. Máximo: {max_dimension}x{max_dimension} píxeles."
+                )
+            
+        except forms.ValidationError:
+            raise
+        except Exception as e:
+            raise forms.ValidationError(
+                "El archivo no es una imagen válida o está corrupto."
+            )
+        image.seek(0)
+        try:
+            img = Image.open(image)
+            img.load()
+        except Exception:
+            raise forms.ValidationError("La imagen no pudo ser procesada correctamente.")
+        image.seek(0)
+        
         return image

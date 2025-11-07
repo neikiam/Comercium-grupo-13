@@ -1,7 +1,6 @@
 from django.apps import AppConfig
 from django.dispatch import receiver
 
-
 try:
     # Import opcional: disponible cuando Django está listo
     from django.db.backends.signals import connection_created

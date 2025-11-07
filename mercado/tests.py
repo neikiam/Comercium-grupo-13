@@ -1,9 +1,11 @@
 from decimal import Decimal
-from django.test import TestCase, Client
+
 from django.contrib.auth import get_user_model
+from django.test import Client, TestCase
 from django.urls import reverse
-from .models import Product, Cart, CartItem
+
 from .forms import ProductForm
+from .models import Cart, CartItem, Product
 
 User = get_user_model()
 
@@ -310,9 +312,10 @@ class ProductFormTests(TestCase):
     def test_edit_product_preserves_title(self):
         """El título no debe cambiar al editar un producto"""
         from io import BytesIO
-        from PIL import Image
+
         from django.core.files.uploadedfile import SimpleUploadedFile
-        
+        from PIL import Image
+
         # Crear una imagen de prueba
         image = Image.new('RGB', (100, 100), color='red')
         image_io = BytesIO()

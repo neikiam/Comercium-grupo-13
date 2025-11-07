@@ -1,5 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
+
 from mercado.models import Product
+
 
 def home(request):
     products = Product.objects.filter(active=True).select_related('seller').order_by("-created_at")[:6]
