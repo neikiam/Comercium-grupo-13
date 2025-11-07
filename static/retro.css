@@ -1,6 +1,6 @@
 /* ========================================
    ESTILO RETRO - Centro de Comercio Digital
-   Inspirado en diseños web de los años 90/2000
+   Inspirado en modarchive.com
    ======================================== */
 
 :root {
@@ -71,8 +71,9 @@ h3 { font-size: 1.4rem; margin-bottom: 0.6rem; }
 .navbar-nav-retro {
   display: flex;
   list-style: none;
-  gap: 1.5rem;
+  gap: 1.2rem;
   align-items: center;
+  flex-wrap: wrap; /* permite que los botones se ajusten en múltiples líneas si hace falta */
 }
 
 .nav-link-retro {
@@ -112,9 +113,9 @@ h3 { font-size: 1.4rem; margin-bottom: 0.6rem; }
   background: var(--retro-accent);
   color: white;
   border: 2px solid var(--retro-border);
-  padding: 0.6rem 1.5rem;
+  padding: clamp(0.45rem, 0.6vw + 0.3rem, 0.6rem) clamp(1rem, 1.2vw + 0.6rem, 1.5rem);
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 1vw + 0.5rem, 1rem);
   font-family: 'Georgia', serif;
   cursor: pointer;
   text-decoration: none;
@@ -138,11 +139,56 @@ h3 { font-size: 1.4rem; margin-bottom: 0.6rem; }
 .btn-retro-secondary {
   background: var(--retro-panel-dark);
   color: white;
+  border: 2px solid var(--retro-border);
+  padding: clamp(0.45rem, 0.6vw + 0.3rem, 0.6rem) clamp(1rem, 1.2vw + 0.6rem, 1.5rem);
+  border-radius: 8px;
+  font-size: clamp(0.9rem, 1vw + 0.5rem, 1rem);
+  font-family: 'Georgia', serif;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.btn-retro-secondary:hover {
+  background: #7a8988;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+}
+
+.btn-retro-secondary:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
 }
 
 .btn-retro-danger {
-  background: #8b6b6b;
-  border-color: #6b4b4b;
+  background: #a86464;
+  border-color: #8b4b4b;
+  color: white;
+  border: 2px solid var(--retro-border);
+  padding: clamp(0.45rem, 0.6vw + 0.3rem, 0.6rem) clamp(1rem, 1.2vw + 0.6rem, 1.5rem);
+  border-radius: 8px;
+  font-size: clamp(0.9rem, 1vw + 0.5rem, 1rem);
+  font-family: 'Georgia', serif;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.btn-retro-danger:hover {
+  background: #944545;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+}
+
+.btn-retro-danger:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
 }
 
 .btn-retro-success {
@@ -153,6 +199,11 @@ h3 { font-size: 1.4rem; margin-bottom: 0.6rem; }
 .btn-retro-small {
   padding: 0.4rem 1rem;
   font-size: 0.9rem;
+}
+
+.btn-small {
+  padding: 0.4rem 1rem;
+  font-size: clamp(0.8rem, 0.7vw + 0.55rem, 0.9rem);
 }
 
 /* ========== FORMULARIOS RETRO ========== */
@@ -193,12 +244,13 @@ h3 { font-size: 1.4rem; margin-bottom: 0.6rem; }
   background: var(--retro-panel);
   border: 2px solid var(--retro-border);
   border-radius: 10px;
-  padding: 1rem;
+  padding: 0;
   box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
   transition: all 0.3s;
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .card-retro:hover {
@@ -206,10 +258,17 @@ h3 { font-size: 1.4rem; margin-bottom: 0.6rem; }
   box-shadow: 5px 5px 0 rgba(0,0,0,0.3);
 }
 
+.card-retro > div:not(.thumb-box-200) {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .card-retro img {
-  border-radius: 6px;
-  border: 2px solid var(--retro-border);
-  margin-bottom: 0.8rem;
+  border-radius: 0;
+  border: none;
+  margin-bottom: 0;
 }
 
 .card-retro-title {
@@ -225,7 +284,6 @@ h3 { font-size: 1.4rem; margin-bottom: 0.6rem; }
   margin-bottom: 0.8rem;
 }
 
-/* ========== HERO RETRO ========== */
 .hero-retro {
   background: linear-gradient(135deg, var(--retro-bg-light) 0%, var(--retro-bg-dark) 100%);
   padding: 3rem 1rem;
@@ -393,7 +451,56 @@ h3 { font-size: 1.4rem; margin-bottom: 0.6rem; }
   vertical-align: middle;
 }
 
-/* ========== RESPONSIVE ========== */
+/* Imagenes de productos: contenedores para que se vea la imagen completa */
+.image-box-detail {
+  width: 100%;
+  max-width: 700px;
+  height: 520px; /* marco fijo */
+  display: flex;
+  align-items: center; /* centra vertical */
+  justify-content: center; /* centra horizontal */
+  background: #fff;
+  border: 2px solid var(--retro-border);
+  border-radius: 8px;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.15);
+  margin: 0 auto;
+  overflow: hidden; /* evita desbordes */
+}
+
+.image-box-detail img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* ajusta sin recortar, cubre horizontal cuando puede */
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .image-box-detail {
+    height: 360px; /* un poco más bajo en móviles */
+  }
+}
+
+.thumb-box-200 {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 2px solid var(--retro-border);
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+  padding: 0.5rem;
+}
+
+.thumb-box-200 img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
 @media (max-width: 768px) {
   .navbar-nav-retro {
     flex-direction: column;

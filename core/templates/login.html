@@ -11,10 +11,9 @@
     <h1 style="margin-bottom: 1rem; text-align: center;">Bienvenido al Centro de Comercio Digital</h1>
     <p style="text-align: center; margin-bottom: 1.5rem;">
       Iniciá sesión para comprar, vender o intercambiar productos<br>
-      O <a href="{% url 'market:productlist' %}">continuar como invitado</a>
+      O <a href="{% url 'mercado:productlist' %}">continuar como invitado</a>
     </p>
 
-    <!-- Formulario normal -->
     <form method="post" action="{% url 'account_login' %}" class="form-retro">
       {% csrf_token %}
       <div style="margin-bottom: 1rem;">
@@ -23,14 +22,18 @@
       <div style="margin-bottom: 1rem;">
         <input type="password" name="password" placeholder="Contraseña" required style="width: 100%;">
       </div>
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: flex; align-items: center; cursor: pointer;">
+          <input type="checkbox" name="remember" id="id_remember" style="width: auto; margin-right: 0.5rem; margin-bottom: 0;">
+          <span>Recordarme</span>
+        </label>
+      </div>
       <button type="submit" class="btn-retro" style="width: 100%;">Iniciar Sesión</button>
     </form>
 
     <p style="text-align: center; margin: 1.5rem 0; color: #666; border-top: 1px solid var(--retro-border); padding-top: 1rem;">O inicia sesión con tu cuenta:</p>
 
-    <!-- Botones sociales -->
     <div style="display: flex; justify-content: center; gap: 1rem;">
-      <!-- Google -->
       <form method="post" action="{% provider_login_url 'google' %}">
         {% csrf_token %}
         <button type="submit" class="btn-retro btn-small" style="display: flex; align-items: center; gap: 0.5rem;">

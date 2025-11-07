@@ -7,4 +7,5 @@ urlpatterns = [
     path('editar/', views.edit_profile, name='edit_profile'),
     path('ver_perfil/', views.profile_view, name='profile_view'),
     path('usuario/<int:user_id>/', views.user_profile_view, name='user_profile_view'),
+    path('eliminar-avatar/', views.delete_avatar, name='delete_avatar'),
 ]

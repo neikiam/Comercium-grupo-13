@@ -5,6 +5,14 @@
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'admin/css/retro-admin.css' %}">
+    <style>
+        body, #container, #content, #content-main, .colM, .colMS {
+            background: #8b9a99 !important;
+        }
+        #content, #content-main {
+            background: #c8d5d4 !important;
+        }
+    </style>
 {% endblock %}
 
 {% block branding %}

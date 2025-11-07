@@ -21,12 +21,9 @@ class CoreConfig(AppConfig):
                 if getattr(connection, 'vendor', None) == 'sqlite':
                     try:
                         cursor = connection.cursor()
-                        # Modo WAL mejora concurrencia (lecturas no bloquean escrituras)
                         cursor.execute("PRAGMA journal_mode=WAL;")
                         # Sincronización NORMAL para mejor rendimiento en dev
                         cursor.execute("PRAGMA synchronous=NORMAL;")
-                        # Aseguramos claves foráneas activas
                         cursor.execute("PRAGMA foreign_keys=ON;")
                     except Exception:
-                        # No bloqueamos el arranque si el PRAGMA falla
                         pass

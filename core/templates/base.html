@@ -21,18 +21,18 @@
       </a>
 
       <ul class="navbar-nav-retro">
-        <li><a class="nav-link-retro" href="{% url 'market:productlist' %}">🏬 Tienda</a></li>
+        <li><a class="nav-link-retro" href="{% url 'mercado:productlist' %}">🏬 Tienda</a></li>
         {% if user.is_authenticated %}
         <li>
-          <a class="nav-link-retro" href="{% url 'market:view-cart' %}">🛒 Carrito{% if cart_count %} <span style="display:inline-block; min-width: 20px; padding: 0 6px; height: 20px; line-height: 20px; text-align:center; background: var(--retro-accent); color: #fff; border-radius: 10px; font-size: 0.8rem; margin-left: 6px;">{{ cart_count }}</span>{% endif %}</a>
+          <a class="nav-link-retro" href="{% url 'mercado:view-cart' %}">🛒 Carrito{% if cart_count %} <span style="display:inline-block; min-width: 20px; padding: 0 6px; height: 20px; line-height: 20px; text-align:center; background: var(--retro-accent); color: #fff; border-radius: 10px; font-size: 0.8rem; margin-left: 6px;">{{ cart_count }}</span>{% endif %}</a>
         </li>
         {% endif %}
         {% if user.is_authenticated %}
-          <li><a class="nav-link-retro" href="{% url 'simple_chat:chat' %}">💬 Chat</a></li>
+          <li><a class="nav-link-retro" href="{% url 'chat_interno:chat' %}">💬 Chat</a></li>
         {% endif %}
 
         {% if user.is_authenticated %}
-          <li><a class="nav-link-retro" href="{% url 'simple_chat:private-list' %}">💬 Chats privados</a></li>
+          <li><a class="nav-link-retro" href="{% url 'chat_interno:private-list' %}">💬 Chats privados</a></li>
           <li style="color: var(--retro-panel);">Hola, {{ user.first_name|default:user.username }}</li>
           
           <li>
@@ -87,7 +87,7 @@
         <div>
           <h5 style="font-size: 1.2rem; margin-bottom: 1rem;">Enlaces</h5>
           <ul style="list-style: none; padding: 0;">
-            <li style="margin-bottom: 0.5rem;"><a href="{% url 'market:productlist' %}" style="font-size: 1rem;">Tienda</a></li>
+            <li style="margin-bottom: 0.5rem;"><a href="{% url 'mercado:productlist' %}" style="font-size: 1rem;">Tienda</a></li>
             <li style="margin-bottom: 0.5rem;"><a href="{% url 'home' %}" style="font-size: 1rem;">Inicio</a></li>
           </ul>
         </div>
