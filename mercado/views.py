@@ -15,7 +15,7 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
 
 from .forms import ProductForm
-from .models import Cart, CartItem, Product
+from .models import Cart, CartItem, Product, ProductImage
 from .services import CartService, ProductService
 
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ def product_list(request):
     Returns:
         HttpResponse con template de lista de productos
     """
-    products = Product.objects.filter(active=True).select_related('seller')
+    products = Product.objects.filter(active=True).select_related('seller').prefetch_related('images')
 
     # Filtro de múltiples categorías
     categories_param = request.GET.get('categories')
@@ -95,7 +95,11 @@ def product_detail(request, pk: int):
     Returns:
         HttpResponse con template de detalle de producto
     """
-    product = get_object_or_404(Product, pk=pk, active=True)
+    product = get_object_or_404(
+        Product.objects.prefetch_related('images'),
+        pk=pk,
+        active=True
+    )
     return render(request, "product_detail.html", {"product": product})
 
 
@@ -113,7 +117,19 @@ def product_create(request):
     if request.method == "POST":
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            ProductService.create_product(request.user, form)
+            # Crear el producto
+            product = ProductService.create_product(request.user, form)
+            
+            # Procesar imágenes adicionales
+            additional_images = request.FILES.getlist('additional_images')
+            if additional_images:
+                for idx, img_file in enumerate(additional_images[:8]):  # Máximo 8 imágenes adicionales
+                    ProductImage.objects.create(
+                        product=product,
+                        image=img_file,
+                        order=idx
+                    )
+            
             messages.success(request, "Producto creado correctamente.")
             return redirect("mercado:productlist")
     else:
@@ -140,17 +156,38 @@ def product_edit(request, pk):
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             ProductService.update_product(product, form, old_image)
+            
+            # Procesar nuevas imágenes adicionales
+            additional_images = request.FILES.getlist('additional_images')
+            if additional_images:
+                # Obtener el orden máximo actual
+                current_max_order = product.images.count()
+                for idx, img_file in enumerate(additional_images[:8]):  # Máximo 8 adicionales
+                    ProductImage.objects.create(
+                        product=product,
+                        image=img_file,
+                        order=current_max_order + idx
+                    )
+            
             messages.success(request, "Producto actualizado correctamente.")
             return redirect("mercado:productlist")
     else:
         form = ProductForm(instance=product)
-    return render(request, "product_form.html", {"form": form, "is_edit": True})
+    
+    # Pasar las imágenes existentes al template
+    existing_images = product.images.all().order_by('order')
+    return render(request, "product_form.html", {
+        "form": form, 
+        "is_edit": True,
+        "product": product,
+        "existing_images": existing_images
+    })
 
 
 @login_required
 def product_delete(request, pk):
     """
-    Elimina un producto. Solo el vendedor propietario puede eliminarlo.
+    Elimina un producto. El vendedor propietario o staff/superusuarios pueden eliminarlo.
     
     Args:
         request: HttpRequest (POST para confirmar o GET para mostrar confirmación)
@@ -159,16 +196,36 @@ def product_delete(request, pk):
     Returns:
         HttpResponse con confirmación o redirect tras eliminación
     """
-    product = get_object_or_404(Product, pk=pk, seller=request.user)
+    # Staff y superusuarios pueden eliminar cualquier producto
+    if request.user.is_staff or request.user.is_superuser:
+        product = get_object_or_404(Product, pk=pk)
+        is_moderator_action = True
+    else:
+        # Usuarios regulares solo pueden eliminar sus propios productos
+        product = get_object_or_404(Product, pk=pk, seller=request.user)
+        is_moderator_action = False
+    
     if request.method == "POST":
+        seller_username = product.seller.username
         ProductService.delete_product(product)
-        messages.success(request, "Producto eliminado correctamente.")
+        
+        if is_moderator_action:
+            logger.warning(f"Moderador {request.user.username} eliminó producto '{product.title}' de usuario {seller_username}")
+            messages.success(request, f"Producto '{product.title}' eliminado correctamente (acción de moderador).")
+        else:
+            messages.success(request, "Producto eliminado correctamente.")
+        
         next_url = request.POST.get("next") or request.META.get("HTTP_REFERER")
         if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
             return redirect(next_url)
         return redirect("mercado:productlist")
+    
     next_url = request.GET.get("next") or request.META.get("HTTP_REFERER")
-    return render(request, "product_confirm_delete.html", {"product": product, "next_url": next_url})
+    return render(request, "product_confirm_delete.html", {
+        "product": product, 
+        "next_url": next_url,
+        "is_moderator_action": is_moderator_action
+    })
 
 
 @login_required
@@ -364,3 +421,34 @@ def payment_failure(request):
     """
     messages.error(request, "El pago no se pudo completar o fue cancelado.")
     return render(request, "payment_failure.html")
+
+
+@login_required
+@require_POST
+def delete_product_image(request, image_id):
+    """
+    Elimina una imagen adicional de un producto.
+    Solo el propietario del producto puede eliminar imágenes.
+    
+    Args:
+        request: HttpRequest (POST)
+        image_id: ID de la imagen a eliminar
+    
+    Returns:
+        JsonResponse con resultado
+    """
+    image = get_object_or_404(ProductImage, pk=image_id)
+    
+    # Verificar que el usuario sea el propietario del producto
+    if image.product.seller != request.user:
+        return JsonResponse({"success": False, "error": "No autorizado"}, status=403)
+    
+    try:
+        image.image.delete(save=False)  # Eliminar archivo físico
+        image.delete()  # Eliminar registro de BD
+        logger.info(f"Imagen {image_id} eliminada de producto {image.product.id} por usuario {request.user.id}")
+        return JsonResponse({"success": True})
+    except Exception as e:
+        logger.error(f"Error al eliminar imagen {image_id}: {e}")
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
+

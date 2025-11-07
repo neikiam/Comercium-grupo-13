@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db import transaction
 
-from .models import Cart, CartItem, Product
+from .models import Cart, CartItem, Product, ProductImage
 
 
 @admin.register(Product)
@@ -66,3 +66,11 @@ class CartItemAdmin(admin.ModelAdmin):
     list_display = ("id", "cart", "product", "quantity")
     list_filter = ("product", "cart__user")
     search_fields = ("product__title", "cart__user__username")
+
+
+@admin.register(ProductImage)
+class ProductImageAdmin(admin.ModelAdmin):
+    list_display = ("id", "product", "order", "uploaded_at")
+    list_filter = ("product", "uploaded_at")
+    search_fields = ("product__title",)
+    ordering = ("product", "order")

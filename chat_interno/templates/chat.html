@@ -2,7 +2,12 @@
 {% block content %}
 <div class="container" style="max-width: 800px; margin: 2rem auto;">
   <h2 style="margin-bottom: 1.5rem; text-align: center;">Chat del mercado local</h2>
-  <p style="text-align:center; margin-bottom: 1rem;"><a class="btn-retro btn-small" href="{% url 'chat_interno:private-list' %}">Ver chats privados</a></p>
+  <p style="text-align:center; margin-bottom: 1rem; display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;">
+    <a class="btn-retro btn-small" href="{% url 'chat_interno:home' %}">⬅ Centro</a>
+    <a class="btn-retro btn-small" href="{% url 'chat_interno:private-list' %}">🔒 Privados</a>
+    <a class="btn-retro btn-small" href="{% url 'chat_interno:requests-list' %}">📝 Solicitudes</a>
+    <a class="btn-retro btn-small" href="{% url 'chat_interno:blocked-list' %}">🚫 Bloqueados</a>
+  </p>
 
   <div class="retro-panel" style="margin-bottom: 1rem;">
     <div id="chat-box" class="chat-retro"></div>

@@ -25,6 +25,15 @@
       <a href="{% url 'perfil:edit_profile' %}" class="btn-retro">✏️ Editar perfil</a>
     {% else %}
       <a href="{% url 'chat_interno:private-start' profile.user.id %}" class="btn-retro">💬 Mensaje privado</a>
+      
+      {% if request.user.is_staff or request.user.is_superuser %}
+        <div style="margin-top: 1rem; padding: 1rem; background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px;">
+          <p style="margin: 0 0 0.75rem 0; font-weight: bold; color: #856404;">🛡️ Panel de Moderación</p>
+          <a href="{% url 'perfil:ban_user_confirm' profile.user.id %}" class="btn-retro" style="background: #e53935; border-color: #c62828;">
+            🚫 Banear usuario
+          </a>
+        </div>
+      {% endif %}
     {% endif %}
   </div>
 

@@ -3,6 +3,11 @@
 {% block content %}
 <div class="container" style="max-width: 800px; margin: 2rem auto;">
   <h2 style="margin-bottom: 1rem; text-align:center;">Chats privados</h2>
+  <p style="text-align:center; margin-bottom: 1rem; display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;">
+    <a class="btn-retro btn-small" href="{% url 'chat_interno:home' %}">⬅ Centro</a>
+    <a class="btn-retro btn-small" href="{% url 'chat_interno:requests-list' %}">📝 Solicitudes</a>
+    <a class="btn-retro btn-small" href="{% url 'chat_interno:blocked-list' %}">🚫 Bloqueados</a>
+  </p>
 
   <div class="retro-panel" style="margin-bottom: 1rem;">
     <form method="post" action="{% url 'chat_interno:private-start-by-username' %}" class="form-retro" id="search-form">
@@ -48,9 +53,7 @@
         <p style="margin-bottom: 0.5rem; font-weight: bold;">¿Te refieres a alguno de estos usuarios?</p>
         <ul style="list-style: none; padding: 0; margin: 0;">
           {% for suggested_user in user_suggestions %}
-            <li style="padding: 0.5rem; border-bottom: 1px solid var(--retro-border);">
-              <form method="post" action="{% url 'chat_interno:private-start' suggested_user.id %}" style="display: flex; align-items: center; gap: 0.75rem;">
-                {% csrf_token %}
+            <li style="padding: 0.5rem; border-bottom: 1px solid var(--retro-border); display:flex; align-items:center; gap:0.75rem;">
                 {% if suggested_user.profile.avatar %}
                   <img src="{{ suggested_user.profile.avatar.url }}" alt="{{ suggested_user.username }}" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--retro-border);">
                 {% else %}
@@ -62,8 +65,15 @@
                     <span style="color: #666;"> - {{ suggested_user.get_full_name }}</span>
                   {% endif %}
                 </div>
-                <button type="submit" class="btn-retro btn-small">💬 Chat</button>
-              </form>
+                <a href="{% url 'perfil:user_profile_view' suggested_user.id %}" class="btn-retro btn-small">👤 Perfil</a>
+                <form method="post" action="{% url 'chat_interno:request-send' suggested_user.id %}" style="margin:0;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-retro btn-small">� Solicitar</button>
+                </form>
+                <form method="post" action="{% url 'chat_interno:block-user' suggested_user.id %}" style="margin:0;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-retro btn-small">🚫 Bloquear</button>
+                </form>
             </li>
           {% endfor %}
         </ul>
@@ -85,6 +95,11 @@
                   <img src="https://ui-avatars.com/api/?name={{ other.username }}&background=random&size=40" alt="{{ other.username }}" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--retro-border);">
                 {% endif %}
                 <a href="{% url 'chat_interno:private-chat' t.id %}" class="nav-link-retro" style="flex: 1;">💬 {{ other.username }}</a>
+                <a href="{% url 'perfil:user_profile_view' other.id %}" class="btn-retro btn-small">👤</a>
+                <form method="post" action="{% url 'chat_interno:block-user' other.id %}">
+                  {% csrf_token %}
+                  <button class="btn-retro btn-small" type="submit">🚫</button>
+                </form>
               </li>
             {% endwith %}
           {% else %}
@@ -96,6 +111,11 @@
                   <img src="https://ui-avatars.com/api/?name={{ other.username }}&background=random&size=40" alt="{{ other.username }}" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--retro-border);">
                 {% endif %}
                 <a href="{% url 'chat_interno:private-chat' t.id %}" class="nav-link-retro" style="flex: 1;">💬 {{ other.username }}</a>
+                <a href="{% url 'perfil:user_profile_view' other.id %}" class="btn-retro btn-small">👤</a>
+                <form method="post" action="{% url 'chat_interno:block-user' other.id %}">
+                  {% csrf_token %}
+                  <button class="btn-retro btn-small" type="submit">🚫</button>
+                </form>
               </li>
             {% endwith %}
           {% endif %}

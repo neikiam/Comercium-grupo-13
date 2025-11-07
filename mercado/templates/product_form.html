@@ -158,10 +158,33 @@
         {% endif %}
       </div>
 
-      <!-- Nota sobre imágenes adicionales (temporal) -->
-      <div style="background: #e3f2fd; border: 1px solid #2196f3; border-radius: 6px; padding: 0.75rem; margin-bottom: 1.5rem;">
-        <p style="margin: 0; color: #1565c0; font-size: 0.9rem;">
-          <strong>ℹ️ Nota:</strong> Por ahora solo puedes subir una imagen principal. La funcionalidad para agregar imágenes adicionales estará disponible próximamente y podrás editarlas más tarde.
+      <!-- Imágenes adicionales existentes (solo en edición) -->
+      {% if is_edit and existing_images %}
+        <div style="margin-bottom: 1.5rem; padding: 1rem; background: #f9f9f9; border: 2px solid var(--retro-border); border-radius: 8px;">
+          <h4 style="margin: 0 0 1rem 0; color: var(--retro-accent);">📸 Imágenes adicionales actuales</h4>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1rem;">
+            {% for img in existing_images %}
+              <div class="existing-image-item" data-image-id="{{ img.id }}" style="position: relative; border: 2px solid #ddd; border-radius: 8px; overflow: hidden; aspect-ratio: 1/1;">
+                <img src="{{ img.image.url }}" alt="Imagen adicional" style="width: 100%; height: 100%; object-fit: cover;">
+                <button type="button" class="delete-image-btn" data-image-id="{{ img.id }}" style="position: absolute; top: 4px; right: 4px; background: rgba(220, 53, 69, 0.9); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);" title="Eliminar imagen">×</button>
+              </div>
+            {% endfor %}
+          </div>
+          <p style="margin: 1rem 0 0 0; font-size: 0.85rem; color: #666;">Haz click en ✕ para eliminar una imagen.</p>
+        </div>
+      {% endif %}
+
+      <!-- Subir nuevas imágenes adicionales -->
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">
+          {{ form.additional_images.label }}
+        </label>
+        {{ form.additional_images }}
+        {% if form.additional_images.help_text %}
+          <small style="color: #666; font-size: 0.85rem; display: block; margin-top: 0.5rem;">{{ form.additional_images.help_text }}</small>
+        {% endif %}
+        <p style="color: #666; font-size: 0.85rem; margin-top: 0.5rem;">
+          Puedes seleccionar múltiples archivos a la vez. Estas imágenes aparecerán en el carrusel del producto.
         </p>
       </div>
 
@@ -227,5 +250,47 @@
       return false;
     }
   });
+
+  // Eliminar imágenes adicionales (solo en edición)
+  {% if is_edit %}
+  document.querySelectorAll('.delete-image-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const imageId = this.getAttribute('data-image-id');
+      const imageItem = this.closest('.existing-image-item');
+      
+      if (!confirm('¿Estás seguro de que quieres eliminar esta imagen? Esta acción no se puede deshacer.')) {
+        return;
+      }
+      
+      // Obtener CSRF token
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      
+      fetch(`/market/image/delete/${imageId}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrfToken,
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Eliminar visualmente el elemento
+          imageItem.style.transition = 'opacity 0.3s, transform 0.3s';
+          imageItem.style.opacity = '0';
+          imageItem.style.transform = 'scale(0.8)';
+          setTimeout(() => imageItem.remove(), 300);
+        } else {
+          alert('Error al eliminar la imagen: ' + (data.error || 'Desconocido'));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error al eliminar la imagen. Por favor, intenta de nuevo.');
+      });
+    });
+  });
+  {% endif %}
 </script>
 {% endblock %}
