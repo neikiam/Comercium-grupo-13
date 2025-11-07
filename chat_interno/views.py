@@ -1,36 +1,54 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse, HttpResponseForbidden
-from django.views.decorators.http import require_POST
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.http import HttpResponseForbidden, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 from django_ratelimit.decorators import ratelimit
-from .models import ChatMessage, DirectMessageThread, DirectMessage
+
+from perfil.utils import get_user_avatar_url
+
+from .models import ChatMessage, DirectMessage, DirectMessageThread
+
 
 @login_required
 def chat_view(request):
     return render(request, "chat.html")
 
 @login_required
-@ratelimit(key="user", rate="60/m", method="GET", block=True)
+@ratelimit(key="user_or_ip", rate="60/m", method="GET", block=True)
 def messages_api(request):
+    """
+    API para obtener mensajes del chat público con paginación.
+    
+    Args:
+        request: HttpRequest con parámetros opcionales:
+            - after_id: para polling incremental
+            - limit: máximo de mensajes (default: 50)
+    
+    Returns:
+        JsonResponse con lista de mensajes
+    """
     after = request.GET.get("after_id")
+    limit = min(int(request.GET.get("limit", 50)), 100)  # Max 100 mensajes
+    
     qs = ChatMessage.objects.select_related("user", "user__profile").all()
     if after:
         qs = qs.filter(id__gt=int(after))
+    
+    qs = qs[:limit]
+    
     msgs = []
     for m in qs:
         if m.user:
-            if hasattr(m.user, "profile") and m.user.profile.avatar:
-                avatar = m.user.profile.avatar.url
-            else:
-                avatar = f"https://ui-avatars.com/api/?name={m.user.username}&background=random"
+            avatar = get_user_avatar_url(m.user)
             username = m.user.username
             user_id = m.user.id
         else:
             avatar = None
             username = "Anon"
             user_id = None
+        
         msgs.append({
             "id": m.id,
             "user_id": user_id,
@@ -43,10 +61,19 @@ def messages_api(request):
 
 @login_required
 @require_POST
-@ratelimit(key="user", rate="10/m", method="POST", block=True)
+@ratelimit(key="user_or_ip", rate="10/m", method="POST", block=True)
 def post_message_api(request):
+    """
+    API para publicar un mensaje en el chat público.
+    
+    Args:
+        request: HttpRequest con POST data 'text'
+    
+    Returns:
+        JsonResponse con id y timestamp del mensaje creado
+    """
     user = request.user
-    text = request.POST.get("text","").strip()
+    text = request.POST.get("text", "").strip()
     if not text:
         return JsonResponse({"error": "empty"}, status=400)
     m = ChatMessage.objects.create(user=user, text=text)
@@ -55,9 +82,18 @@ def post_message_api(request):
 
 @login_required
 def private_list(request):
+    """
+    Vista para listar todas las conversaciones privadas del usuario.
+    
+    Args:
+        request: HttpRequest
+    
+    Returns:
+        HttpResponse con template de lista de conversaciones
+    """
     user = request.user
     threads = DirectMessageThread.objects.filter(user1=user) | DirectMessageThread.objects.filter(user2=user)
-    threads = threads.select_related("user1", "user2").order_by("-created_at")
+    threads = threads.select_related("user1", "user2", "user1__profile", "user2__profile").order_by("-created_at")
     return render(request, "private_list.html", {"threads": threads})
 
 
@@ -101,7 +137,7 @@ def private_start_by_username(request):
             Q(username__icontains=username) | 
             Q(first_name__icontains=username) | 
             Q(last_name__icontains=username)
-        ).exclude(id=request.user.id)[:10]
+        ).exclude(id=request.user.id).only('id', 'username', 'first_name', 'last_name')[:10]
         
         if matches.count() == 0:
             # No se encontró ningún usuario
@@ -141,9 +177,17 @@ def private_start_by_username(request):
 
 
 @login_required
-@ratelimit(key="user", rate="30/m", method="GET", block=True)
+@ratelimit(key="user_or_ip", rate="30/m", method="GET", block=True)
 def search_users_api(request):
-    """API para buscar usuarios en tiempo real (autocompletado)"""
+    """
+    API para buscar usuarios en tiempo real (autocompletado).
+    
+    Args:
+        request: HttpRequest con parámetro 'q' (query de búsqueda)
+    
+    Returns:
+        JsonResponse con lista de usuarios coincidentes
+    """
     query = request.GET.get("q", "").strip()
     if not query or len(query) < 2:
         return JsonResponse({"users": []})
@@ -153,16 +197,13 @@ def search_users_api(request):
         Q(username__icontains=query) | 
         Q(first_name__icontains=query) | 
         Q(last_name__icontains=query)
-    ).exclude(id=request.user.id).select_related("profile")[:10]
+    ).exclude(id=request.user.id).select_related("profile").only(
+        'id', 'username', 'first_name', 'last_name', 'profile__avatar'
+    )[:10]
     
     results = []
     for u in users:
-        avatar = None
-        if hasattr(u, "profile") and u.profile.avatar:
-            avatar = u.profile.avatar.url
-        else:
-            avatar = f"https://ui-avatars.com/api/?name={u.username}&background=random&size=40"
-        
+        avatar = get_user_avatar_url(u, size=40)
         display_name = u.get_full_name() or u.username
         results.append({
             "id": u.id,
@@ -175,28 +216,44 @@ def search_users_api(request):
 
 
 @login_required
-@ratelimit(key="user", rate="60/m", method="GET", block=True)
+@ratelimit(key="user_or_ip", rate="60/m", method="GET", block=True)
 def private_messages_api(request, thread_id: int):
+    """
+    API para obtener mensajes de una conversación privada con paginación.
+    
+    Args:
+        request: HttpRequest con parámetros opcionales:
+            - after_id: para polling incremental
+            - limit: máximo de mensajes (default: 50)
+        thread_id: ID del hilo de conversación
+    
+    Returns:
+        JsonResponse con lista de mensajes privados
+    """
     thread = get_object_or_404(DirectMessageThread, id=thread_id)
     if request.user not in thread.participants():
         return HttpResponseForbidden()
+    
     after = request.GET.get("after_id")
+    limit = min(int(request.GET.get("limit", 50)), 100)  # Max 100 mensajes
+    
     qs = thread.messages.select_related("user", "user__profile").all()
     if after:
         qs = qs.filter(id__gt=int(after))
+    
+    qs = qs[:limit]
+    
     msgs = []
     for m in qs:
         if m.user:
-            if hasattr(m.user, "profile") and m.user.profile.avatar:
-                avatar = m.user.profile.avatar.url
-            else:
-                avatar = f"https://ui-avatars.com/api/?name={m.user.username}&background=random"
+            avatar = get_user_avatar_url(m.user)
             username = m.user.username
             user_id = m.user.id
         else:
             avatar = None
             username = "Anon"
             user_id = None
+        
         msgs.append({
             "id": m.id,
             "user_id": user_id,
@@ -210,13 +267,25 @@ def private_messages_api(request, thread_id: int):
 
 @login_required
 @require_POST
-@ratelimit(key="user", rate="10/m", method="POST", block=True)
+@ratelimit(key="user_or_ip", rate="10/m", method="POST", block=True)
 def private_post_message_api(request, thread_id: int):
+    """
+    API para publicar un mensaje en una conversación privada.
+    
+    Args:
+        request: HttpRequest con POST data 'text'
+        thread_id: ID del hilo de conversación
+    
+    Returns:
+        JsonResponse con id y timestamp del mensaje creado
+    """
     thread = get_object_or_404(DirectMessageThread, id=thread_id)
     if request.user not in thread.participants():
         return HttpResponseForbidden()
+    
     text = request.POST.get("text", "").strip()
     if not text:
         return JsonResponse({"error": "empty"}, status=400)
+    
     m = DirectMessage.objects.create(thread=thread, user=request.user, text=text)
     return JsonResponse({"id": m.id, "created_at": m.created_at.isoformat()})

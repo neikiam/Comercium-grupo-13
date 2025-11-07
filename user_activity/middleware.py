@@ -1,8 +1,10 @@
-from django.utils import timezone
-from django.shortcuts import redirect
 from django.contrib.auth import logout
-from .models import UserActivity
 from django.db.utils import OperationalError
+from django.shortcuts import redirect
+from django.utils import timezone
+
+from .models import UserActivity
+
 
 class AutoLogoutMiddleware:
     def __init__(self, get_response):

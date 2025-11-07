@@ -1,8 +1,10 @@
-from django.shortcuts import render
-
-from django.utils import timezone
 from datetime import timedelta
+
+from django.shortcuts import render
+from django.utils import timezone
+
 from .models import UserActivity
+
 
 def online_users(request):
     cutoff = timezone.now() - timedelta(minutes=5)

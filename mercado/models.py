@@ -1,8 +1,7 @@
 from django.conf import settings
-from django.db.models.signals import pre_delete
-from django.dispatch import receiver
 from django.db import models
-from django.db.models.signals import post_delete
+from django.utils import timezone
+
 
 class Product(models.Model):
     CATEGORY_CHOICES = [
@@ -66,15 +65,34 @@ class Product(models.Model):
             models.Index(fields=['category', '-created_at']),
             models.Index(fields=['seller', '-created_at']),
             models.Index(fields=['active', '-created_at']),
+            models.Index(fields=['title']),
+            models.Index(fields=['marca']),
+            models.Index(fields=['active', 'stock']),
         ]
         ordering = ['-created_at']
     
 # Carrito
 class Cart(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at = models.DateTimeField(default=timezone.now)
 
     def total(self):
         return sum(item.subtotal() for item in self.items.all())
+    
+    def is_stale(self, days=30):
+        """Verifica si el carrito está abandonado (sin actualizaciones por X días)"""
+        from datetime import timedelta
+
+        from django.utils import timezone
+        cutoff = timezone.now() - timedelta(days=days)
+        return self.updated_at < cutoff
+
+    def save(self, *args, **kwargs):
+        self.updated_at = timezone.now()
+        if not self.created_at:
+            self.created_at = self.updated_at
+        return super().save(*args, **kwargs)
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="items")
@@ -83,16 +101,3 @@ class CartItem(models.Model):
 
     def subtotal(self):
         return self.product.price * self.quantity
-
-@receiver(pre_delete, sender=Product)
-def cleanup_cartitems_on_product_delete(sender, instance, **kwargs):
-    CartItem.objects.filter(product=instance).delete()
-
-# Eliminar archivo de imagen del almacenamiento cuando se elimina el Product
-@receiver(post_delete, sender=Product)
-def cleanup_product_image_on_delete(sender, instance, **kwargs):
-    try:
-        if instance.image:
-            instance.image.delete(save=False)
-    except Exception:
-        pass
