@@ -4,17 +4,86 @@
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
 ![Database](https://img.shields.io/badge/Database-SQLite3-orange)
 
-## 📌 Descripción
+## Equipo de desarrollo
 
-**Comercium** es un mercado digital, enfocado en facilitar la compra, venta e intercambio de bienes dentro de una comunidad local sin comisiones altas.
+- [Brian Guzmán](https://steamcommunity.com/profiles/76561199212464163) - Líder | Backend | Frontend
+- [Gonzalo Rosales](https://steamcommunity.com/id/rosalse) - Frontend | Tester | Investigación
+- [Facundo Martel](https://steamcommunity.com/profiles/76561199063819049) - Tester | Backend | Errores
 
-### Problema real
-Mucha gente quiere vender o intercambiar cosas en su comunidad sin pagar comisiones altas a plataformas grandes.
+![Devs](./losdevs.jpg)
+---
 
-### Solución
-Marketplace simple y funcional con publicación de productos, chat en tiempo real, gestión de usuarios y pagos digitales integrados.
+## Comercium
 
-### Innovación
+El mercado digital enfocado en facilitar la compra, venta e intercambio de bienes dentro de una comunidad local sin comisiones altas. Mucha gente quiere vender o intercambiar cosas en su comunidad sin pagar comisiones altas a plataformas grandes.
+La solución es un espacio simple y funcional con publicación de productos, chat en tiempo real, gestión de usuarios y pagos digitales integrados.
+
+---
+
+## Requisitos
+
+- **Git**
+- **Python 3.10**
+- **Visual Studio Code** con extensiones de **Python**
+
+---
+
+## Instalación
+
+## Pasos previos
+
+En GitHub, ir a **Code** -> **Download ZIP**
+
+Una vez descargado el proyecto, **extraer** en una carpeta, luego abrir Visual Studio Code.
+
+**Visual Studio Code:**
+
+**File** -> **Open Folder** -> **Comercium-grupo-13**
+
+Dentro de la carpeta raíz, crear un archivo llamado **.env** y copiar todo lo que está dentro de **.env.example** reemplazando los campos con **[brackets]** y llenando los campos vacíos con información correspondiente.
+
+## Consola
+
+Abrir una terminal con **CTRL + Ñ**
+
+Abrir una consola **Command Prompt** y escribir uno por uno los siguientes comandos:
+
+```bash
+py -3.10 -m venv .venv
+```
+
+```bash 
+.venv\Scripts\activate
+```
+
+```bash 
+python --version
+```
+
+```bash 
+python -m pip install --upgrade pip
+```
+
+```bash 
+python -m pip install -U pip setuptools wheel
+```
+
+```bash 
+python -m pip install -r requirements.txt
+```
+
+```bash
+python manage.py migrate
+```
+
+```bash
+python manage.py runserver
+```
+
+---
+
+### Especial
+
 - **Foco en intercambio entre usuarios** además de compra/venta tradicional
 - **Integración con pagos digitales** (MercadoPago)
 - **Chat interno** entre usuarios para negociación directa
@@ -22,17 +91,17 @@ Marketplace simple y funcional con publicación de productos, chat en tiempo rea
 
 ---
 
-## ⚙️ Tecnologías utilizadas
+## Tecnologías utilizadas
 
-- **Backend:** Django 5.2.7, Python 3.10
-- **Base de datos:** SQLite3 (desarrollo y producción ligera)
-- **Autenticación:** Django Allauth (login social con Google)
-- **Pagos:** MercadoPago SDK
 - **Frontend:** HTML, CSS
+- **Backend:** Django 5.2.7, Python 3.10
+- **Base de datos:** SQLite3
+- **Autenticación:** Django Allauth
+- **Pagos:** MercadoPago
 
 ---
 
-## 💡 Funcionalidades principales
+## Funcionalidades
 
 - **Registro e inicio de sesión** con autenticación social (Google)
 - **Gestión de productos**: crear, editar, eliminar y listar con filtros por categoría y precio

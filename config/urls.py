@@ -5,17 +5,14 @@ from django.templatetags.static import static as static_tag
 from django.urls import include, path
 from django.views.generic.base import RedirectView
 
-from core.views import home
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", home, name="home"),
+    path("", include("core.urls")),
     path("accounts/", include("allauth.urls")),
     path("market/", include("mercado.urls")),
     path("profiles/", include("perfil.urls")),
     path("user-activity/", include("user_activity.urls")),
     path("chat/", include("chat_interno.urls")),
-    path('core/', include('core.urls')),
     path("favicon.ico", RedirectView.as_view(url=static_tag('favicon.svg'), permanent=True)),
 ]
 

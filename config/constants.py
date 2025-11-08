@@ -1,5 +1,5 @@
 """
-Constantes globales del proyecto Commercium.
+Constantes globales del proyecto Comercium.
 Centraliza valores mágicos y configuraciones reutilizables.
 """
 
