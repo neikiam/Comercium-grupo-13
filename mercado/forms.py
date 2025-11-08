@@ -1,6 +1,7 @@
 import io
 
 from django import forms
+from django.core.exceptions import ValidationError
 from PIL import Image
 
 from .models import Product
@@ -77,6 +78,7 @@ class ProductForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
             self.fields['title'].disabled = True
+            self.fields['title'].widget.attrs['readonly'] = True
     
     def clean_title(self):
         title = self.cleaned_data.get('title')
@@ -104,15 +106,13 @@ class ProductForm(forms.ModelForm):
     
     def clean_stock(self):
         stock = self.cleaned_data.get('stock')
-        if stock is None or stock < 1:
-            raise forms.ValidationError("El stock debe ser al menos 1.")
-        # Asegurar que sea entero
-        try:
-            stock = int(stock)
-        except (ValueError, TypeError):
-            raise forms.ValidationError("El stock debe ser un número entero.")
-        if stock < 1:
-            raise forms.ValidationError("El stock debe ser al menos 1.")
+        if stock is not None:
+            try:
+                stock = int(stock)
+                if stock < 0:
+                    raise ValidationError('El stock no puede ser negativo.')
+            except (TypeError, ValueError):
+                raise ValidationError('El stock debe ser un número válido.')
         return stock
     
     def clean_image(self):
@@ -150,7 +150,4 @@ class ProductForm(forms.ModelForm):
         return image
     
     def clean_additional_images(self):
-        """Validar imágenes adicionales subidas"""
-        # Las imágenes adicionales se manejan en la vista
-        # porque request.FILES.getlist() no está disponible aquí
-        return self.cleaned_data.get('additional_images')
+        return None

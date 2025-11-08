@@ -57,13 +57,11 @@ def product_list(request):
     Returns:
         HttpResponse con template de lista de productos
     """
-    products = Product.objects.filter(active=True).select_related('seller').prefetch_related('images')
-
-    # Filtro de múltiples categorías
-    categories_param = request.GET.get('categories')
-    if categories_param is not None:
-        category_list = [c.strip() for c in categories_param.split(',') if c.strip()]
-        products = products.filter(category__in=category_list)
+    queryset = Product.objects.filter(active=True).select_related('seller').prefetch_related('images')
+    
+    categories = request.GET.getlist('category')
+    if categories:
+        queryset = queryset.filter(category__in=categories)
 
     order = request.GET.get('order')
     query = request.GET.get('q')
@@ -92,8 +90,9 @@ def product_list(request):
     get_params.pop('page', None)
     base_qs = get_params.urlencode()
 
-    # Mostrar 50 productos por página
-    paginator = Paginator(products, 50)
+                pass
+    
+    paginator = Paginator(queryset, PRODUCTS_PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

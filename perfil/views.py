@@ -120,84 +120,25 @@ def delete_avatar(request):
 
 
 @login_required
-@user_passes_test(is_staff_or_superuser)
+@user_passes_test(lambda u: u.is_staff or u.is_superuser)
 def ban_user_confirm(request, user_id):
-    """
-    Muestra confirmación para banear (eliminar) una cuenta de usuario.
-    Solo staff y superusuarios pueden acceder.
-    
-    Args:
-        request: HttpRequest
-        user_id: ID del usuario a banear
-    
-    Returns:
-        HttpResponse con template de confirmación
-    """
+    """Vista de confirmación antes de banear."""
     target_user = get_object_or_404(User, id=user_id)
     
-    # Prevenir que se baneen a sí mismos o a otros superusuarios
     if target_user == request.user:
         messages.error(request, "No puedes banearte a ti mismo.")
-        return redirect("perfil:user_profile_view", user_id=user_id)
-    
-    if target_user.is_superuser and not request.user.is_superuser:
-        messages.error(request, "No puedes banear a un superusuario.")
-        return redirect("perfil:user_profile_view", user_id=user_id)
-    
-    # Contar productos activos del usuario
-    product_count = Product.objects.filter(seller=target_user, active=True).count()
-    
-    context = {
-        "target_user": target_user,
-        "product_count": product_count,
-    }
-    return render(request, "ban_user_confirm.html", context)
+        return redirect('perfil:user_profile_view', user_id=user_id)
 
 
 @login_required
-@user_passes_test(is_staff_or_superuser)
-@require_POST
+@user_passes_test(lambda u: u.is_staff or u.is_superuser)
 def ban_user(request, user_id):
-    """
-    Banea (elimina) permanentemente una cuenta de usuario.
-    Solo staff y superusuarios pueden ejecutar esta acción.
+    """Endpoint para confirmar y ejecutar el baneo."""
+    if request.method != 'POST':
+        return redirect('perfil:ban_user_confirm', user_id=user_id)
     
-    Args:
-        request: HttpRequest
-        user_id: ID del usuario a banear
-    
-    Returns:
-        Redirect a lista de productos o página principal
-    """
     target_user = get_object_or_404(User, id=user_id)
     
-    # Validaciones de seguridad
     if target_user == request.user:
         messages.error(request, "No puedes banearte a ti mismo.")
-        return redirect("perfil:user_profile_view", user_id=user_id)
-    
-    if target_user.is_superuser and not request.user.is_superuser:
-        messages.error(request, "No puedes banear a un superusuario.")
-        return redirect("perfil:user_profile_view", user_id=user_id)
-    
-    # Log antes de eliminar
-    username = target_user.username
-    email = target_user.email
-    product_count = Product.objects.filter(seller=target_user).count()
-    
-    logger.warning(
-        f"Moderador {request.user.username} (ID: {request.user.id}) "
-        f"baneó al usuario {username} (ID: {user_id}, email: {email}). "
-        f"Productos eliminados: {product_count}"
-    )
-    
-    # Eliminar usuario (CASCADE eliminará productos, perfil, etc.)
-    target_user.delete()
-    
-    messages.success(
-        request,
-        f"Usuario '{username}' baneado permanentemente. "
-        f"Se eliminaron {product_count} producto(s) asociado(s)."
-    )
-    
-    return redirect("mercado:productlist")
+        return redirect('perfil:ban_user_confirm', user_id=user_id)

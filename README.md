@@ -3,6 +3,7 @@
 ![Django](https://img.shields.io/badge/Django-5.2.7-green)
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
 ![Database](https://img.shields.io/badge/Database-SQLite3-orange)
+![Pagos](https://img.shields.io/badge/Mercado-Pago-yellow)
 
 ## Equipo de desarrollo
 
@@ -88,16 +89,6 @@ python manage.py runserver
 - **Integración con pagos digitales** (MercadoPago)
 - **Chat interno** entre usuarios para negociación directa
 - **Chat general** para la comunicación colectiva de la comunidad
-
----
-
-## Tecnologías utilizadas
-
-- **Frontend:** HTML, CSS
-- **Backend:** Django 5.2.7, Python 3.10
-- **Base de datos:** SQLite3
-- **Autenticación:** Django Allauth
-- **Pagos:** MercadoPago
 
 ---
 
