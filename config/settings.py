@@ -18,10 +18,21 @@ if not SECRET_KEY:
     else:
         raise ValueError("SECRET_KEY must be set in production!")
 
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
-ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")]
+# En Render, la variable de entorno 'RENDER' está presente. Se usa eso para desactivar DEBUG automáticamente.
+DEBUG = 'RENDER' not in os.environ
 
-CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()]
+# Hostname externo provisto por Render (si existe). Caso contrario, desarrollo local.
+RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME]
+else:
+    ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+
+# CSRF Trusted Origins: si está en Render, agregamos el hostname automáticamente con https
+if RENDER_EXTERNAL_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS = [f"https://{RENDER_EXTERNAL_HOSTNAME}"]
+else:
+    CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()]
 
 BASICS = [
     "django.contrib.admin",
@@ -87,13 +98,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-]
-
-# Que whitenoise solo sea en producción
-if not DEBUG:
-    MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
-
-MIDDLEWARE += [
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -126,30 +131,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-DATABASES = {}
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL:
-    DATABASES["default"] = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
-elif os.getenv("DATABASE_NAME"):
-    DATABASES["default"] = {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("DATABASE_NAME"),
-        "USER": os.getenv("DATABASE_USER"),
-        "PASSWORD": os.getenv("DATABASE_PASSWORD"),
-        "HOST": os.getenv("DATABASE_HOST", "localhost"),
-        "PORT": os.getenv("DATABASE_PORT", "3306"),
-        "OPTIONS": {
-            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'"
-        },
-    }
+db_config = dj_database_url.config(default=os.environ.get("DATABASE_URL"), conn_max_age=600)
+if db_config:
+    DATABASES = {"default": db_config}
 else:
-    DATABASES["default"] = {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-        "OPTIONS": {
-            "timeout": int(os.getenv("SQLITE_TIMEOUT", "10")),
-        },
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+            "OPTIONS": {
+                "timeout": int(os.getenv("SQLITE_TIMEOUT", "10")),
+            },
+        }
     }
 
 SOCIALACCOUNT_PROVIDERS = {

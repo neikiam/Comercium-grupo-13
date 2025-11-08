@@ -58,6 +58,9 @@ class Product(models.Model):
 
     def is_available(self):
         return self.active and self.stock > 0
+
+
+class Cart(models.Model):
     
     class Meta:
         indexes = [
