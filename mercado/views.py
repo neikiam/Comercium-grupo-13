@@ -11,15 +11,38 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
-from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
+from PIL import Image
 
 from .forms import ProductForm
 from .models import Cart, CartItem, Product, ProductImage
 from .services import CartService, ProductService
 
 logger = logging.getLogger(__name__)
-@cache_page(60 * 5)  # Cache por 5 minutos
+
+
+def validate_additional_image(image_file):
+    if image_file.size > 5 * 1024 * 1024:
+        return False, "Una de las imágenes supera los 5MB."
+    
+    try:
+        img = Image.open(image_file)
+        img.verify()
+        
+        allowed_formats = ['JPEG', 'PNG', 'GIF', 'WEBP']
+        if img.format not in allowed_formats:
+            return False, f"Formato no permitido en una imagen. Use: {', '.join(allowed_formats)}"
+        
+        max_dimension = 10000
+        if img.width > max_dimension or img.height > max_dimension:
+            return False, f"Una imagen es demasiado grande (máx: {max_dimension}x{max_dimension}px)"
+        
+        image_file.seek(0)
+        return True, None
+    except Exception:
+        return False, "Una de las imágenes no es válida o está corrupta."
+
+
 def product_list(request):
     """
     Lista productos activos con filtrado, búsqueda, ordenamiento y paginación.
@@ -117,13 +140,16 @@ def product_create(request):
     if request.method == "POST":
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            # Crear el producto
             product = ProductService.create_product(request.user, form)
             
-            # Procesar imágenes adicionales
             additional_images = request.FILES.getlist('additional_images')
             if additional_images:
-                for idx, img_file in enumerate(additional_images[:8]):  # Máximo 8 imágenes adicionales
+                for idx, img_file in enumerate(additional_images[:8]):
+                    is_valid, error_msg = validate_additional_image(img_file)
+                    if not is_valid:
+                        messages.warning(request, f"Imagen adicional {idx+1}: {error_msg}")
+                        continue
+                    
                     ProductImage.objects.create(
                         product=product,
                         image=img_file,
@@ -157,12 +183,15 @@ def product_edit(request, pk):
         if form.is_valid():
             ProductService.update_product(product, form, old_image)
             
-            # Procesar nuevas imágenes adicionales
             additional_images = request.FILES.getlist('additional_images')
             if additional_images:
-                # Obtener el orden máximo actual
                 current_max_order = product.images.count()
-                for idx, img_file in enumerate(additional_images[:8]):  # Máximo 8 adicionales
+                for idx, img_file in enumerate(additional_images[:8]):
+                    is_valid, error_msg = validate_additional_image(img_file)
+                    if not is_valid:
+                        messages.warning(request, f"Imagen adicional {idx+1}: {error_msg}")
+                        continue
+                    
                     ProductImage.objects.create(
                         product=product,
                         image=img_file,
