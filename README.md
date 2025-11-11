@@ -86,6 +86,7 @@ python manage.py runserver
 
 ### Características especiales de este template
 
+- **Estilo RETRO** muy hermoso, una obra de arte
 - **Foco en intercambio comunicacional entre usuarios** además de compra/venta tradicional
 - **Integración con MercadoPago**
 - **Chat interno** entre usuarios para negociación directa
