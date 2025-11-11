@@ -8,8 +8,8 @@
 ## Equipo de desarrollo
 
 - [Brian Guzmán](https://steamcommunity.com/profiles/76561199212464163) - Líder | Backend | Frontend
-- [Gonzalo Rosales](https://steamcommunity.com/id/rosalse) - Frontend | Tester | Investigación
-- [Facundo Martel](https://steamcommunity.com/profiles/76561199063819049) - Tester | Backend | Errores
+- [Gonzalo Rosales](https://www.linkedin.com/in/gonzalo-rosales-325a45296/) - Frontend | Tester | Investigación
+- [Facundo Martel](https://www.linkedin.com/in/facundo-martel-078683324/) - Tester | Backend | Errores
 
 ![Devs](./losdevs.jpg)
 ---
