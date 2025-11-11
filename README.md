@@ -1,5 +1,6 @@
 # Comercium
 
+![Comercium](./screenshot.png)
 ![Django](https://img.shields.io/badge/Django-5.2.7-green)
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
 ![Database](https://img.shields.io/badge/Database-SQLite3-orange)
