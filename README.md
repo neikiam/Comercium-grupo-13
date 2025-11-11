@@ -7,9 +7,9 @@
 
 ## Equipo de desarrollo
 
-- [Brian Guzmán](https://steamcommunity.com/profiles/76561199212464163) - Líder | Backend | Frontend
+- [Brian Guzmán](https://steamcommunity.com/profiles/76561199212464163) - Líder | Backend | Frontend | Investigación
 - [Gonzalo Rosales](https://www.linkedin.com/in/gonzalo-rosales-325a45296/) - Frontend | Tester | Investigación
-- [Facundo Martel](https://www.linkedin.com/in/facundo-martel-078683324/) - Tester | Backend | Errores
+- [Facundo Martel](https://www.linkedin.com/in/facundo-martel-078683324/) - Tester | Backend | Errores |Investigación
 
 ![Devs](./losdevs.jpg)
 ---
@@ -83,16 +83,16 @@ python manage.py runserver
 
 ---
 
-### Especial
+### Características especiales de este template
 
-- **Foco en intercambio entre usuarios** además de compra/venta tradicional
-- **Integración con pagos digitales** (MercadoPago)
+- **Foco en intercambio comunicacional entre usuarios** además de compra/venta tradicional
+- **Integración con MercadoPago**
 - **Chat interno** entre usuarios para negociación directa
 - **Chat general** para la comunicación colectiva de la comunidad
 
 ---
 
-## Funcionalidades que trae esta plantilla
+## Funcionalidades que trae
 
 - **Registro e inicio de sesión** con autenticación social (Google)
 - **Gestión de productos**: crear, editar, eliminar y listar con filtros por categoría y precio
