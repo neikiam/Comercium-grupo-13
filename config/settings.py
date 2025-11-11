@@ -57,6 +57,7 @@ PROPIAS = [
     "perfil",
     "user_activity",
     "chat_interno",
+    "notifications",
 ]
 
 INSTALLED_APPS = BASICS + TERCEROS + PROPIAS
@@ -72,14 +73,18 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-ACCOUNT_LOGIN_METHODS = {"username", "email"}
-ACCOUNT_SIGNUP_FIELDS = ["email", "username"]
+# Configuración de allauth
+ACCOUNT_LOGIN_METHODS = {'username', 'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email', 'username*', 'password1*', 'password2*']
+ACCOUNT_EMAIL_VERIFICATION = os.getenv("ACCOUNT_EMAIL_VERIFICATION", "none")
+ACCOUNT_USERNAME_MIN_LENGTH = 3
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_UNIQUE_EMAIL = True 
-ACCOUNT_EMAIL_VERIFICATION = os.getenv("ACCOUNT_EMAIL_VERIFICATION", "none")
 ACCOUNT_PASSWORD_INPUT_RENDER_VALUE = False
 ACCOUNT_SESSION_REMEMBER = True
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_EMAIL_VERIFICATION = os.getenv("ACCOUNT_EMAIL_VERIFICATION", "none")
+SOCIALACCOUNT_QUERY_EMAIL = True
 
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@comercium.local")
@@ -124,6 +129,8 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "mercado.context_processors.cart",
+                "core.context_processors.socialaccount_settings",
+                "notifications.context_processors.notifications",
             ],
         },
     },
@@ -158,6 +165,21 @@ SOCIALACCOUNT_PROVIDERS = {
 
 MERCADOPAGO_ACCESS_TOKEN = os.getenv("MERCADOPAGO_ACCESS_TOKEN")
 MERCADOPAGO_PUBLIC_KEY = os.getenv("MERCADOPAGO_PUBLIC_KEY")
+
+# MercadoPago Marketplace OAuth (para producción)
+MERCADOPAGO_APP_ID = os.getenv("MERCADOPAGO_APP_ID")
+MERCADOPAGO_CLIENT_SECRET = os.getenv("MERCADOPAGO_CLIENT_SECRET")
+MERCADOPAGO_REDIRECT_URI = os.getenv("MERCADOPAGO_REDIRECT_URI", "http://localhost:8000/profiles/mercadopago/callback/")
+MERCADOPAGO_PLATFORM_FEE_PERCENTAGE = float(os.getenv("MERCADOPAGO_PLATFORM_FEE_PERCENTAGE", "10"))  # Comisión de la plataforma (%)
+
+# En desarrollo, usar credenciales de prueba si no están configuradas
+if DEBUG and not MERCADOPAGO_ACCESS_TOKEN:
+    print("⚠️  WARNING: MercadoPago credentials not configured.")
+    print("   The payment system will not work until you add your test credentials.")
+    print("   Get them from: https://www.mercadopago.com.ar/developers/panel/app")
+    print("   Add to .env file:")
+    print("   MERCADOPAGO_ACCESS_TOKEN=TEST-your-access-token")
+    print("   MERCADOPAGO_PUBLIC_KEY=TEST-your-public-key")
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
