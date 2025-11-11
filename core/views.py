@@ -8,4 +8,16 @@ def home(request):
     return render(request, "index.html", {"products": products})
 
 def login_view(request):
-    return render(request, 'login.html')
+    """Redirige a la vista de login de allauth."""
+    from django.shortcuts import redirect
+    return redirect('account_login')
+
+
+def error_404(request, exception):
+    """Handler para errores 404 (página no encontrada)."""
+    return render(request, 'errors/404.html', status=404)
+
+
+def error_500(request):
+    """Handler para errores 500 (error interno del servidor)."""
+    return render(request, 'errors/500.html', status=500)
