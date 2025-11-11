@@ -92,7 +92,7 @@ python manage.py runserver
 
 ---
 
-## Funcionalidades
+## Funcionalidades que trae esta plantilla
 
 - **Registro e inicio de sesión** con autenticación social (Google)
 - **Gestión de productos**: crear, editar, eliminar y listar con filtros por categoría y precio
